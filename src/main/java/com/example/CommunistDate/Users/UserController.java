@@ -1,6 +1,6 @@
 package com.example.CommunistDate.Users;
 
-import java.util.*;
+// import java.util.*;
 import org.springframework.web.server.ResponseStatusException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -30,7 +30,7 @@ public class UserController {
   // public List<User> getAllUsers() {
   //   return repository.findAll();
   // }
-
+  @CrossOrigin(origins = "http://127.0.0.1:5173/")
   @PostMapping("/register")
   public ResponseEntity<Object> registerUser(@Valid @RequestBody RegisterRequest registerRequest, BindingResult result) {
     if (result.hasErrors()) {
