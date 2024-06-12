@@ -31,7 +31,6 @@ public class UserController {
   //   return repository.findAll();
   // }
 
-  // @CrossOrigin(origins = "http://127.0.0.1:5173/")
   @PostMapping("/register")
   public ResponseEntity<Object> registerUser(@Valid @RequestBody RegisterRequest registerRequest, BindingResult result) {
     if (result.hasErrors()) {
