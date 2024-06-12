@@ -9,7 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import jakarta.validation.Valid;
-import org.springframework.security.access.prepost.PreAuthorize;
+// import org.springframework.security.access.prepost.PreAuthorize;
 // import org.springframework.security.core.Authentication;
 
 @RestController
@@ -25,11 +25,11 @@ public class UserController {
     this.service = service;
   } 
 
-  @PreAuthorize("hasRole('ROLE_ADMIN')")
-  @GetMapping("/all")
-  public List<User> getAllUsers() {
-    return repository.findAll();
-  }
+  // @PreAuthorize("hasRole('ROLE_ADMIN')")
+  // @GetMapping("/all")
+  // public List<User> getAllUsers() {
+  //   return repository.findAll();
+  // }
 
   @PostMapping("/register")
   public ResponseEntity<Object> registerUser(@Valid @RequestBody RegisterRequest registerRequest, BindingResult result) {
