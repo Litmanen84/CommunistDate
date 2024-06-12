@@ -29,7 +29,7 @@ public class JwtService {
             .issuer(jwtIssuer)
             .issuedAt(now)
             .expiresAt(now.plusSeconds(jwtLength))
-            .claim("is_admin", user.getIsAdmin())
+            .claim("isAdmin", user.getIsAdmin())
             .build();
 
         var encoder = new NimbusJwtEncoder(
