@@ -144,7 +144,7 @@ public class RegisterRequest {
         this.politicalBelief = politicalBelief;
     }
 
-    public Optional<Integer> getCommunismLevel() {  //fatte modifiche qui
+    public Optional<Integer> getCommunismLevel() {
         return Optional.ofNullable(communismLevel);
     }
 
