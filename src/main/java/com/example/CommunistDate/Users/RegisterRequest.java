@@ -30,7 +30,6 @@ public class RegisterRequest {
     @NotBlank
     private String nationality;
 
-    @NotBlank
     @Min(value=18, message="You must be at least 18 years old to be a true communist and join our community")
     private int age;
 
@@ -46,7 +45,6 @@ public class RegisterRequest {
     @Nullable
     private Integer communismLevel;
 
-    @NotBlank
     private boolean partnerShare;
 
     public RegisterRequest() {}
