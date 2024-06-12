@@ -10,24 +10,21 @@ import java.util.Objects;
 
 
 @Entity
-@Table(name = "user")
+@Table(name = "users")
 public class User implements UserDetails {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id")
-    private Long id;
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  @Column(name = "id")
+  private Long id;
 
     @Column(name = "username", unique = true, nullable = false)
     private String username;
 
     @Column(name = "password", nullable = false)
-    // @Size(min = 5, max = 15)
-    // @Pattern(regexp = "^(?=.*[A-Z])(?=.*\\d).+$", message = "Password must contain at least one uppercase letter and one number")
     private String password;
 
     @Column(name = "email", unique = true, nullable = false)
-    // @Email(message = "Email should be valid")
     private String email;
 
     @Column(name = "gender", nullable = false)
@@ -43,7 +40,6 @@ public class User implements UserDetails {
     private String nationality;
 
     @Column(name = "age", nullable = false)
-    // @Min(value=18, message="You must be at least 18 years old")
     private int age;
 
     @Column(name = "country_of_residence", nullable = false)
@@ -67,7 +63,7 @@ public class User implements UserDetails {
     @Column(name = "communism_level", nullable = true)
     private Integer communismLevel;
 
-    @Column(name = "partner_share", nullable = false, columnDefinition = "BOOLEAN DEFAULT FALSE")
+    @Column(name = "partner_share", columnDefinition = "BOOLEAN DEFAULT FALSE")
     private boolean partnerShare;
 
     @Column(name = "biography", nullable = true)
@@ -79,7 +75,7 @@ public class User implements UserDetails {
     @Column(name = "profile_picture", nullable = true)
     private byte[] profilePicture;
 
-    @Column(name = "is_admin", nullable = true, columnDefinition = "BOOLEAN DEFAULT FALSE")
+    @Column(name = "isadmin", nullable = true, columnDefinition = "BOOLEAN DEFAULT FALSE")
     private boolean isAdmin;
 
     public User() {}

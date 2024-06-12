@@ -29,21 +29,12 @@ public class WebSecurityConfig {
         return http
             .csrf(csrf -> csrf.disable())
             .authorizeHttpRequests(auth -> auth 
-            .requestMatchers("/register", "/login", "/").permitAll()
+            .requestMatchers("users/register").permitAll()
             .anyRequest().authenticated()
             )
             .oauth2ResourceServer(oauth2 -> oauth2.jwt(Customizer.withDefaults()))
             .sessionManagement(session -> session.sessionCreationPolicy(
                 SessionCreationPolicy.STATELESS))
-            // .and()
-            // .logout(logout -> logout
-            //     .logoutUrl("/logout")
-            //     .clearAuthentication(true)
-            //     .invalidateHttpSession(true)
-            //     .deleteCookies("JSESSIONID", "remember-me")
-            //     .logoutSuccessUrl("/")
-            //     .permitAll()
-            // )
             .build();
     }
 
