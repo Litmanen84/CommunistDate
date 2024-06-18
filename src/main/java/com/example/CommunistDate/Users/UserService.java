@@ -7,6 +7,10 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
+
+import com.example.CommunistDate.config.ErrorResponse;
+import com.example.CommunistDate.config.FieldErrorResponse;
+
 import org.springframework.security.core.userdetails.UserDetailsService;
 import java.util.*;
 import java.util.stream.Collectors;

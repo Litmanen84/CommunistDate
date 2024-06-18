@@ -1,4 +1,4 @@
-package com.example.CommunistDate.Users;
+package com.example.CommunistDate.config;
 
 public class FieldErrorResponse {
     private String field;
