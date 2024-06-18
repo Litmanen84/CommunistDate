@@ -8,11 +8,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.security.core.userdetails.UserDetailsService;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
+import java.util.stream.Collectors;
+
 import org.springframework.security.authentication.AuthenticationManager;
-// import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 
 @Service
 public class UserService implements UserDetailsService {
@@ -20,36 +20,43 @@ public class UserService implements UserDetailsService {
     private final UserRepository repository;
     private final PasswordEncoder crypt;
     private final JwtService JwtService;
-    // private final AuthenticationManager authenticationManager;
+    private final AuthenticationManager authenticationManager;
 
     @Autowired
     @Lazy
     public UserService(UserRepository repository, AuthenticationManager authenticationManager,
                        PasswordEncoder crypt, JwtService jwtService) {
         this.repository = repository;
-        // this.authenticationManager = authenticationManager;
+        this.authenticationManager = authenticationManager;
         this.crypt = crypt;
         this.JwtService = jwtService;
     }
 
     public Map<String, Object> registerUser(RegisterRequest registerRequest, BindingResult result) {
         if (result.hasErrors()) {
-            var errorsList = result.getAllErrors();
-            var errorsMap = new HashMap<String, String>();
-
-            for(int i = 0; i < errorsList.size(); i++) {
-                var error = (FieldError) errorsList.get(i);
-                errorsMap.put(error.getField(), error.getDefaultMessage());
-                System.out.println("Validation error on field " + error.getField() + ": " + error.getDefaultMessage());
-            }
-            throw new IllegalArgumentException(errorsMap.toString());
+            List<FieldErrorResponse> fieldErrors = result.getFieldErrors().stream()
+                .map(fieldError -> new FieldErrorResponse(fieldError.getField(), fieldError.getDefaultMessage()))
+                .collect(Collectors.toList());
+    
+            ErrorResponse errorResponse = new ErrorResponse("Validation failed", fieldErrors);
+            throw new IllegalArgumentException(errorResponse.toString());
         }
-
-        // String password = registerRequest.getPassword();
-        // if (password == null || password.isEmpty()) {
-        //     throw new IllegalArgumentException("La password non può essere vuota");
-        // }
-
+    
+        Optional<User> userByUsername = repository.findByUsername(registerRequest.getUsername());
+        Optional<User> userByEmail = repository.findByEmail(registerRequest.getEmail());
+    
+        if (userByUsername.isPresent() || userByEmail.isPresent()) {
+            List<FieldErrorResponse> fieldErrors = new ArrayList<>();
+            if (userByUsername.isPresent()) {
+                fieldErrors.add(new FieldErrorResponse("username", "Username already exists"));
+            }
+            if (userByEmail.isPresent()) {
+                fieldErrors.add(new FieldErrorResponse("email", "Email already exists"));
+            }
+            ErrorResponse errorResponse = new ErrorResponse("Validation failed", fieldErrors);
+            throw new IllegalArgumentException(errorResponse.toString());
+        }
+    
         User user = new User();
         user.setUsername(registerRequest.getUsername());
         user.setEmail(registerRequest.getEmail());
@@ -61,31 +68,52 @@ public class UserService implements UserDetailsService {
         user.setPartnerShare(registerRequest.getPartnerShare());
         user.setCountryOfResidence(registerRequest.getCountryOfResidence());
         user.setLanguage(registerRequest.getLanguage());
-        user.setPoliticalBelief(registerRequest.getPoliticalBelief());    
+        user.setPoliticalBelief(registerRequest.getPoliticalBelief());
         user.setIsAdmin(false);
         user.setCommunismLevel(registerRequest.getCommunismLevel().orElse(0));
-
-        var otherUserByUsername = repository.findByUsername(registerRequest.getUsername());
-        var otherUserByEmail = repository.findByEmail(registerRequest.getEmail());
-
-        if (otherUserByUsername.isPresent()) {
-            System.out.println("Username " + registerRequest.getUsername() + " already exists");
-            throw new IllegalArgumentException("Username already exists");  
-        } else if (otherUserByEmail.isPresent()) {
-            System.out.println("Email " + registerRequest.getEmail() + " already exists");
-            throw new IllegalArgumentException("Email already exists");
-        }
-
+    
         repository.save(user);
-        System.out.println("User " + user.getUsername() + " registered successfully");
-
         String jwtToken = JwtService.createJwtToken(user);
-
-        var response = new HashMap<String, Object>();
+    
+        Map<String, Object> response = new HashMap<>();
         response.put("user", user);
         response.put("token", jwtToken);
-
+    
         return response;
+    }
+
+    public Map<String, Object> loginUser(LoginRequest loginRequest, BindingResult result) {
+        if (result.hasErrors()) {
+            List<FieldErrorResponse> fieldErrors = result.getFieldErrors().stream()
+                .map(fieldError -> new FieldErrorResponse(fieldError.getField(), fieldError.getDefaultMessage()))
+                .collect(Collectors.toList());
+    
+            ErrorResponse errorResponse = new ErrorResponse("Validation failed", fieldErrors);
+            throw new IllegalArgumentException(errorResponse.toString());
+        }
+            try {
+            authenticationManager.authenticate(
+                new UsernamePasswordAuthenticationToken(
+                loginRequest.getUsername(), 
+                loginRequest.getPassword())
+            );
+            User user = repository.findByUsername(loginRequest.getUsername())
+                            .orElseThrow(() -> new UsernameNotFoundException("User not found"));
+    
+            String jwtToken = JwtService.createJwtToken(user);
+    
+            var response = new HashMap<String, Object>();
+            response.put("user", user);
+            response.put("token", jwtToken);
+            return response;
+            }
+            
+            catch (Exception e) {
+            System.out.println("There is an Exception:");
+            e.printStackTrace();
+            }
+            
+            return null;
     }
 
     public User findByUsername(String username) {

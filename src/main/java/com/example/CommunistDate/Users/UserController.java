@@ -1,6 +1,6 @@
 package com.example.CommunistDate.Users;
 
-// import java.util.*;
+import java.util.*;
 import org.springframework.web.server.ResponseStatusException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -9,7 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import jakarta.validation.Valid;
-// import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.access.prepost.PreAuthorize;
 // import org.springframework.security.core.Authentication;
 
 @RestController
@@ -25,11 +25,11 @@ public class UserController {
     this.service = service;
   } 
 
-  // @PreAuthorize("hasRole('ROLE_ADMIN')")
-  // @GetMapping("/all")
-  // public List<User> getAllUsers() {
-  //   return repository.findAll();
-  // }
+  @PreAuthorize("hasRole('ROLE_ADMIN')")
+  @GetMapping("/all")
+  public List<User> getAllUsers() {
+    return repository.findAll();
+  }
 
   @PostMapping("/register")
   public ResponseEntity<Object> registerUser(@Valid @RequestBody RegisterRequest registerRequest, BindingResult result) {
@@ -49,14 +49,14 @@ public class UserController {
     }
 }
 
-    // @PostMapping("/login")
-    //   public ResponseEntity<Object> loginUser(@Valid @RequestBody LoginRequest loginRequest,
-    //       BindingResult result) {
-    //       try {
-    //           return ResponseEntity.ok(service.loginUser(loginRequest, result));
-    //       } catch (Exception e) {
-    //           throw new ResponseStatusException(
-    //               HttpStatus.UNAUTHORIZED, e.getMessage(), e);
-    //       }
-    //   }
+    @PostMapping("/login")
+      public ResponseEntity<Object> loginUser(@Valid @RequestBody LoginRequest loginRequest,
+          BindingResult result) {
+          try {
+              return ResponseEntity.ok(service.loginUser(loginRequest, result));
+          } catch (Exception e) {
+              throw new ResponseStatusException(
+                  HttpStatus.UNAUTHORIZED, e.getMessage(), e);
+          }
+      }
 }
