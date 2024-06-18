@@ -29,8 +29,7 @@ public class WebSecurityConfig {
         return http
             .csrf(csrf -> csrf.disable())
             .authorizeHttpRequests(auth -> auth 
-            .requestMatchers("/users/register").permitAll()
-            .requestMatchers("/users/login").hasAnyRole("")
+            .requestMatchers("/users/register", "/users/login").permitAll()
             .anyRequest().authenticated()
             )
             .oauth2ResourceServer(oauth2 -> oauth2.jwt(Customizer.withDefaults()))
