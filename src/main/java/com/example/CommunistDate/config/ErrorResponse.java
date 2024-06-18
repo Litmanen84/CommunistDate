@@ -1,4 +1,4 @@
-package com.example.CommunistDate.Users;
+package com.example.CommunistDate.config;
 
 import java.util.List;
 

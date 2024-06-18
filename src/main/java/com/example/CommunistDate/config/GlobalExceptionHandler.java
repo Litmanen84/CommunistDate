@@ -1,4 +1,4 @@
-package com.example.CommunistDate.Users;
+package com.example.CommunistDate.config;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.AuthenticationException;

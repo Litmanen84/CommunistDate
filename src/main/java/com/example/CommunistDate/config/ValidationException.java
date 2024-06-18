@@ -1,4 +1,5 @@
-package com.example.CommunistDate.Users;
+package com.example.CommunistDate.config;
+
 public class ValidationException extends RuntimeException {
     private final ErrorResponse errorResponse;
 

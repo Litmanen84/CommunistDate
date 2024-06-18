@@ -10,7 +10,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import jakarta.validation.Valid;
 import org.springframework.security.access.prepost.PreAuthorize;
-// import org.springframework.security.core.Authentication;
+import org.springframework.security.core.Authentication;
 
 @RestController
 @RequestMapping("/users")
@@ -30,6 +30,18 @@ public class UserController {
   public List<User> getAllUsers() {
     return repository.findAll();
   }
+
+  @GetMapping("/profile")
+  public ResponseEntity<Object> personalProfile(Authentication auth) {
+    var response = new HashMap<String, Object>();
+    response.put("Username", auth.getName());
+    response.put("Authorities", auth.getAuthorities());
+
+    var user = repository.findByUsername(auth.getName());
+    response.put("User", user);
+
+    return ResponseEntity.ok(response);
+  }  
 
   @PostMapping("/register")
   public ResponseEntity<Object> registerUser(@Valid @RequestBody RegisterRequest registerRequest, BindingResult result) {
