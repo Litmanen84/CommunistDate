@@ -6,15 +6,12 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.BindingResult;
-import org.springframework.validation.FieldError;
-
 import com.example.CommunistDate.config.ErrorResponse;
 import com.example.CommunistDate.config.FieldErrorResponse;
-
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import java.util.*;
 import java.util.stream.Collectors;
-
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 
@@ -25,15 +22,17 @@ public class UserService implements UserDetailsService {
     private final PasswordEncoder crypt;
     private final JwtService JwtService;
     private final AuthenticationManager authenticationManager;
+    private final CustomUserDetailsService customUserDetailsService;
 
     @Autowired
     @Lazy
     public UserService(UserRepository repository, AuthenticationManager authenticationManager,
-                       PasswordEncoder crypt, JwtService jwtService) {
+                       PasswordEncoder crypt, JwtService jwtService, CustomUserDetailsService customUserDetailsService) {
         this.repository = repository;
         this.authenticationManager = authenticationManager;
         this.crypt = crypt;
         this.JwtService = jwtService;
+        this.customUserDetailsService = customUserDetailsService;
     }
 
     public Map<String, Object> registerUser(RegisterRequest registerRequest, BindingResult result) {
@@ -134,13 +133,7 @@ public class UserService implements UserDetailsService {
     }
 
     @Override
-    public User loadUserByUsername(String username) throws UsernameNotFoundException {
-        Optional<User> userOptional = repository.findByUsername(username);
-
-        if (userOptional.isPresent()) {
-            return userOptional.get();
-        } else {
-            throw new UsernameNotFoundException("User not found");
-        }
+    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+        return customUserDetailsService.loadUserByUsername(username);
     }
 }
