@@ -16,14 +16,15 @@ public class CommunistDateApplication extends SpringBootServletInitializer {
     private static final Logger logger = LoggerFactory.getLogger(CommunistDateApplication.class);
 
     public static void main(String[] args) {
+        
         String port = System.getenv("PORT");
         if (port == null || port.isEmpty()) {
             port = "8080";
         }
         
         System.setProperty("server.port", port);
-        logger.info("Vaffanculo, application starting...");
+        logger.info("Here we are, application starting...");
         SpringApplication.run(CommunistDateApplication.class, args);
-        logger.info("Vaffanculo, application started...");
+        logger.info("Finally, application started...");
     }
 }
