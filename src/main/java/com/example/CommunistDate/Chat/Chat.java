@@ -24,7 +24,7 @@ public class Chat {
     @Column(name = "content", nullable = false)
     public String content;
 
-    @Column(nullable = false)
+    @Column(nullable = true, name = "timestamp")
     public LocalDateTime createdAt = LocalDateTime.now();
 
     public Chat() {}

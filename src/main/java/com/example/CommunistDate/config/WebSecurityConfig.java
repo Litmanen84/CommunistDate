@@ -17,11 +17,19 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.ProviderManager;
+import com.example.CommunistDate.Users.CustomUserDetailsService;
 import com.example.CommunistDate.Users.UserService;
 
 @Configuration
 @EnableWebSecurity
 public class WebSecurityConfig {
+
+    private final CustomUserDetailsService CustomUserDetailsService;
+
+    public WebSecurityConfig(CustomUserDetailsService CustomUserDetailsService) {
+        this.CustomUserDetailsService = CustomUserDetailsService;
+    }
+    
     @Value("${security.jwt.secret-key}")
     private String jwtSecretKey;
 
@@ -54,7 +62,7 @@ public class WebSecurityConfig {
     @Bean
     public AuthenticationManager authenticationManager(UserService userService) {
         DaoAuthenticationProvider provider = new DaoAuthenticationProvider();   
-        provider.setUserDetailsService(userService);
+        provider.setUserDetailsService(CustomUserDetailsService);
         provider.setPasswordEncoder(passwordEncoder());
         return new ProviderManager(provider);
     }

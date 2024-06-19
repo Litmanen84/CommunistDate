@@ -1,11 +1,9 @@
 package com.example.CommunistDate.Users;
 
 import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import jakarta.persistence.*;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Objects;
 
 
@@ -103,17 +101,10 @@ public class User implements UserDetails {
         this.isAdmin = isAdmin;
     }
 
-@Override
+    @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return Collections.singleton(new SimpleGrantedAuthority(isAdmin ? "ROLE_ADMIN" : "ROLE_USER"));
+        return null;
     }
-
-//     @Override
-// public Collection<? extends GrantedAuthority> getAuthorities() {
-//     String role = isAdmin ? "ROLE_ADMIN" : "ROLE_USER";
-//     return Collections.singletonList(new SimpleGrantedAuthority(role));
-// }
-
 
     @Override
     public boolean isAccountNonExpired() {

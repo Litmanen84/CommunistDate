@@ -2,6 +2,8 @@ package com.example.CommunistDate.Users;
 
 import java.util.*;
 import org.springframework.web.server.ResponseStatusException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
@@ -18,6 +20,7 @@ public class UserController {
 
   private final UserRepository repository;
   private final UserService service;
+  private static final Logger logger = LoggerFactory.getLogger(UserController.class);
 
   @Autowired
   UserController(UserRepository repository, UserService service) {
@@ -48,7 +51,7 @@ public class UserController {
     if (result.hasErrors()) {
       FieldError fieldError = result.getFieldError();
       if (fieldError != null) {
-        System.out.println("Validation error on field " + fieldError.getField() + ": " + fieldError.getDefaultMessage() + " " + fieldError.getCode());
+        logger.debug("Validation error on field " + fieldError.getField() + ": " + fieldError.getDefaultMessage() + " " + fieldError.getCode());
       }
       return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(result.getAllErrors());
     }
@@ -64,6 +67,7 @@ public class UserController {
     @PostMapping("/login")
       public ResponseEntity<Object> loginUser(@Valid @RequestBody LoginRequest loginRequest,
           BindingResult result) {
+          logger.debug("Ma vaffanculo" + loginRequest.toString());
           try {
               return ResponseEntity.ok(service.loginUser(loginRequest, result));
           } catch (Exception e) {
