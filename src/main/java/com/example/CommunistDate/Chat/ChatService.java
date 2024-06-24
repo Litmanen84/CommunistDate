@@ -5,6 +5,7 @@ import org.springframework.stereotype.Service;
 import com.example.CommunistDate.Users.User;
 import com.example.CommunistDate.Users.UserRepository;
 import jakarta.persistence.EntityNotFoundException;
+import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -18,6 +19,10 @@ public class ChatService {
     public ChatService(ChatRepository chatRepository, UserRepository userRepository) {
         this.chatRepository = chatRepository;
         this.userRepository = userRepository;
+    }
+
+    public List<Chat> getChatHistory(Long userId1, Long userId2) {
+        return chatRepository.findBySenderIdAndReceiverIdOrReceiverIdAndSenderId(userId1, userId2, userId2, userId1);
     }
 
     public void sendMessage(Long senderId, NewMessage newMessage) {

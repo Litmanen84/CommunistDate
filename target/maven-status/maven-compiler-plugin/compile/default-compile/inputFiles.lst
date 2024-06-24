@@ -20,3 +20,4 @@
 /home/litmanen/becode-code/CommunistDate/src/main/java/com/example/CommunistDate/config/GlobalExceptionHandler.java
 /home/litmanen/becode-code/CommunistDate/src/main/java/com/example/CommunistDate/config/ValidationException.java
 /home/litmanen/becode-code/CommunistDate/src/main/java/com/example/CommunistDate/config/WebSecurityConfig.java
+/home/litmanen/becode-code/CommunistDate/src/main/java/com/example/CommunistDate/config/WebSocketConfig.java
