@@ -34,6 +34,15 @@ public class UserController {
     return repository.findAll();
   }
 
+  @GetMapping("/random")
+  public ResponseEntity<Object> getRandomUser() {
+    var user = repository.findRandomUser();
+    if (user.isEmpty()) {
+      return ResponseEntity.status(HttpStatus.NOT_FOUND).body("No users found");
+    }
+    return ResponseEntity.ok(user.get());
+  }
+
   @GetMapping("/profile")
   public ResponseEntity<Object> personalProfile(Authentication auth) {
     var response = new HashMap<String, Object>();
