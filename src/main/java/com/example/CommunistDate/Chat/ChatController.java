@@ -35,8 +35,9 @@ public class ChatController {
         this.userRepository = userRepository;
     }
 
-    @GetMapping("/chatHistory/")
-    public List<Chat> getChatHistory(@PathVariable Long userId2, Authentication auth, BindingResult result) {
+    @GetMapping("/history/{id}")
+    public List<Chat> getChatHistory(@PathVariable("id") Long userId2, Authentication auth) {
+        logger.debug("userId2 è Cristo.." + userId2);
         if ((auth == null) || !(auth.getPrincipal() instanceof Jwt)) {
             logger.error("Ehi! Authentication object is null -1");
             return Collections.emptyList();
@@ -47,20 +48,16 @@ public class ChatController {
             return Collections.emptyList();
         }
     
-        if (result.hasErrors()) {
-            logger.error("Ehi! Authentication object is null -3");
-            return Collections.emptyList();
-        }
-    
+        logger.debug("userId2 è vaffanculo.." + userId2);
         Jwt jwt = (Jwt) auth.getPrincipal();
         logger.debug("Here is the JWT instance: " + jwt);
         String username = jwt.getSubject();
         boolean isAdmin = jwt.getClaim("isAdmin");
-        logger.debug("This is the Username looking at the conversation: " + username);
-        logger.debug("Let's check your authorities: " + isAdmin);
+        logger.debug("This is the Username looking at the conversation, vaffanculo: " + username);
+        logger.debug("Let's check your authorities, vaffanculo: " + isAdmin);
         Optional<User> sender = userRepository.findByUsername(username);
         var userId1 = sender.get().getId();
-        logger.debug("This is the ID of the user looking at the conversation: " + userId1);
+        logger.debug("This is the ID of the user looking at the conversation, vaffanculo: " + userId1);
 
         return chatService.getChatHistory(userId1, userId2);
     }
