@@ -15,7 +15,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import com.example.CommunistDate.Users.User;
 import com.example.CommunistDate.Users.UserRepository;
-
 import io.jsonwebtoken.lang.Collections;
 import jakarta.validation.Valid;
 import org.springframework.validation.BindingResult;
@@ -36,8 +35,8 @@ public class ChatController {
         this.userRepository = userRepository;
     }
 
-    @GetMapping("/history/{userId1}/{userId2}")
-    public List<Chat> getChatHistory(@PathVariable Long userId1, @PathVariable Long userId2, Authentication auth, BindingResult result) {
+    @GetMapping("/chatHistory/")
+    public List<Chat> getChatHistory(@PathVariable Long userId2, Authentication auth, BindingResult result) {
         if ((auth == null) || !(auth.getPrincipal() instanceof Jwt)) {
             logger.error("Ehi! Authentication object is null -1");
             return Collections.emptyList();
@@ -58,7 +57,11 @@ public class ChatController {
         String username = jwt.getSubject();
         boolean isAdmin = jwt.getClaim("isAdmin");
         logger.debug("This is the Username looking at the conversation: " + username);
-        logger.debug("Let's check your authorities: " + isAdmin); 
+        logger.debug("Let's check your authorities: " + isAdmin);
+        Optional<User> sender = userRepository.findByUsername(username);
+        var userId1 = sender.get().getId();
+        logger.debug("This is the ID of the user looking at the conversation: " + userId1);
+
         return chatService.getChatHistory(userId1, userId2);
     }
 
