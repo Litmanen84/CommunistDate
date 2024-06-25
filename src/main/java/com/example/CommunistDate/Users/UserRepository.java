@@ -9,5 +9,5 @@ public interface UserRepository extends JpaRepository<User, Long> {
     public Optional<User> findByUsername(String username);
 
     @Query(value = "SELECT * from users ORDER BY RANDOM() LIMIT 1", nativeQuery = true)
-    Optional<User> findRandomUser();
+    User findRandomUser();
 }

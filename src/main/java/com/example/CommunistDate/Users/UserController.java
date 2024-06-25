@@ -35,12 +35,21 @@ public class UserController {
   }
 
   @GetMapping("/random")
-  public ResponseEntity<Object> getRandomUser() {
-    var user = repository.findRandomUser();
-    if (user.isEmpty()) {
-      return ResponseEntity.status(HttpStatus.NOT_FOUND).body("No users found");
+  public ResponseEntity<Object> getRandomUser(Authentication auth) {
+    Optional<User> askingUserOptional = repository.findByUsername(auth.getName());
+    if (!askingUserOptional.isPresent()) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found");
     }
-    return ResponseEntity.ok(user.get());
+    User askingUser = askingUserOptional.get();
+    User user;
+    do {
+        user = repository.findRandomUser();
+        if (user == null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("No users found");
+        }
+    } while (user.getUsername().equals(askingUser.getUsername()));
+    
+    return ResponseEntity.ok(user);
   }
 
   @GetMapping("/profile")
