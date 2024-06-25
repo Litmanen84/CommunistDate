@@ -2,9 +2,11 @@ package com.example.CommunistDate.Likes;
 import com.example.CommunistDate.Users.User;
 import com.example.CommunistDate.Users.UserRepository;
 import jakarta.persistence.EntityNotFoundException;
+import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
+import java.util.List;
 
 @Service
 public class LikeService {
@@ -33,5 +35,19 @@ public class LikeService {
             throw e;
         }
     }
+
+    public List<User> getMatches(Long userId) {
+        List<Like> likesByUser = likeRepository.findLikesByUserId1(userId);
+        List<Long> likedUserIds = likesByUser.stream()
+                .map(like -> like.getUserId2().getId())
+                .collect(Collectors.toList());
+
+        List<Like> likesReceived = likeRepository.findLikesByUserId2(userId);
+        return likesReceived.stream()
+                .filter(like -> likedUserIds.contains(like.getUserId1().getId()))
+                .map(Like::getUserId1)
+                .collect(Collectors.toList());
+    }
 }
+
 
