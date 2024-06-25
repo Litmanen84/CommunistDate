@@ -23,7 +23,7 @@ public class Like {
     @JoinColumn(name = "userid2", nullable = false)
     public User userId2;
 
-    @Column(name = "likes", nullable = true)
+    @Column(name = "liked", nullable = true)
     public boolean likes;
 
     @Column(nullable = true, name = "timestamp")
