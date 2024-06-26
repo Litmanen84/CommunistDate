@@ -35,6 +35,31 @@ public class ChatController {
         this.userRepository = userRepository;
     }
 
+    @GetMapping("/allPersonalChats")
+    public List<ChatGroup> getAllChats(Authentication auth) {
+        if ((auth == null) || !(auth.getPrincipal() instanceof Jwt)) {
+            logger.error("Ehi! Authentication object is null -1");
+            return Collections.emptyList();
+        }
+        if (!auth.isAuthenticated()) {
+            logger.error("Ehi! You are not authenticated -2");
+            return Collections.emptyList();
+        }
+
+        Jwt jwt = (Jwt) auth.getPrincipal();
+        logger.debug("Here is the JWT instance: " + jwt);
+        String username = jwt.getSubject();
+        boolean isAdmin = jwt.getClaim("isAdmin");
+        logger.debug("This is the Username: " + username);
+        logger.debug("Let's check your authorities: " + isAdmin);
+        Optional<User> user = userRepository.findByUsername(username);
+        if (user.isEmpty()) {
+            return Collections.emptyList();
+        }
+        var userId = user.get().getId();
+        return chatService.getAllChatsGrouped(userId);
+    }
+
     @GetMapping("/history/{id}")
     public List<Chat> getChatHistory(@PathVariable("id") Long userId2, Authentication auth) {
         logger.debug("userId2 è Cristo.." + userId2);
@@ -58,41 +83,6 @@ public class ChatController {
 
         return chatService.getChatHistory(userId1, userId2);
     }
-
-    // @MessageMapping("/send")
-    // public ResponseEntity<?> sendMessage(@Valid @RequestBody NewMessage newMessage, Authentication auth) {
-    //     logger.debug("Starting sendMessage method...");
-    //     if ((auth == null) || !(auth.getPrincipal() instanceof Jwt)) {
-    //         logger.error("Ehi! Authentication object is null");
-    //         return null;
-    //     }
-    //     if (!auth.isAuthenticated()) {
-    //         return null;
-    //     }
-    //     Jwt jwt = (Jwt) auth.getPrincipal();
-    //     logger.debug("Here is the JWT instance: " + jwt);
-    //     String username = jwt.getSubject();
-    //     boolean isAdmin = jwt.getClaim("isAdmin");
-    //     logger.debug("This is the Username, vaffanculo: " + username);
-    //     logger.debug("Let's check your authorities, vaffanculo: " + isAdmin);
-    //     Optional<User> sender = userRepository.findByUsername(username);
-    //     var senderId = sender.get().getId();
-    //     logger.debug("This is the ID of the user looking at the conversation, vaffanculo: " + senderId);
-    //     try {
-    //             Chat chat = chatService.sendMessage(senderId, newMessage);
-    //             logger.debug("here the chat object vaffanculo:" + chat.toString());
-    //             messagingTemplate.convertAndSendToUser(
-    //             newMessage.getReceiverId().toString(), // destinatario
-    //             "/queue/messages", // coda dell'utente
-    //             chat // contenuto del messaggio
-    //     );
-    //             logger.debug("Message sent to the Service");
-    //             return ResponseEntity.ok().build();     
-    //         } catch (Exception e) {
-    //             logger.error("Error sending message", e);
-    //             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error sending message: " + e.getMessage());
-    //             }
-    // }
 
     @PostMapping("/send")
     public ResponseEntity<?> sendMessage(@Valid @RequestBody NewMessage newMessage, BindingResult result, Authentication auth) {

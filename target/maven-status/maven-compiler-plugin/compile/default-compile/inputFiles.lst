@@ -1,5 +1,6 @@
 /home/litmanen/becode-code/CommunistDate/src/main/java/com/example/CommunistDate/Chat/Chat.java
 /home/litmanen/becode-code/CommunistDate/src/main/java/com/example/CommunistDate/Chat/ChatController.java
+/home/litmanen/becode-code/CommunistDate/src/main/java/com/example/CommunistDate/Chat/ChatGroup.java
 /home/litmanen/becode-code/CommunistDate/src/main/java/com/example/CommunistDate/Chat/ChatRepository.java
 /home/litmanen/becode-code/CommunistDate/src/main/java/com/example/CommunistDate/Chat/ChatService.java
 /home/litmanen/becode-code/CommunistDate/src/main/java/com/example/CommunistDate/Chat/NewMessage.java
