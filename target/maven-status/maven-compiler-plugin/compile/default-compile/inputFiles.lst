@@ -19,6 +19,7 @@
 /home/litmanen/becode-code/CommunistDate/src/main/java/com/example/CommunistDate/Users/UserController.java
 /home/litmanen/becode-code/CommunistDate/src/main/java/com/example/CommunistDate/Users/UserRepository.java
 /home/litmanen/becode-code/CommunistDate/src/main/java/com/example/CommunistDate/Users/UserService.java
+/home/litmanen/becode-code/CommunistDate/src/main/java/com/example/CommunistDate/WebSocket/WebSocketController.java
 /home/litmanen/becode-code/CommunistDate/src/main/java/com/example/CommunistDate/config/AuthenticationErrorResponse.java
 /home/litmanen/becode-code/CommunistDate/src/main/java/com/example/CommunistDate/config/CorsConfig.java
 /home/litmanen/becode-code/CommunistDate/src/main/java/com/example/CommunistDate/config/ErrorResponse.java
@@ -26,3 +27,4 @@
 /home/litmanen/becode-code/CommunistDate/src/main/java/com/example/CommunistDate/config/GlobalExceptionHandler.java
 /home/litmanen/becode-code/CommunistDate/src/main/java/com/example/CommunistDate/config/ValidationException.java
 /home/litmanen/becode-code/CommunistDate/src/main/java/com/example/CommunistDate/config/WebSecurityConfig.java
+/home/litmanen/becode-code/CommunistDate/src/main/java/com/example/CommunistDate/config/WebSocketConfiguration.java
