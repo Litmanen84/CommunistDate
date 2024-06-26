@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+
+    <!-- Definizione dell'appender per scrivere su file -->
+    <appender name="FILE" class="ch.qos.logback.core.FileAppender">
+        <file>logs/websocket.log</file> <!-- Percorso del file di log -->
+        <encoder>
+            <pattern>%date [%thread] %-5level %logger{35} - %msg%n</pattern> <!-- Formato del log -->
+        </encoder>
+    </appender>
+    
+    <!-- Logger specifico per il pacchetto org.springframework.web.socket -->
+    <logger name="org.springframework.web.socket" level="DEBUG" additivity="false">
+        <appender-ref ref="FILE" /> <!-- Associa l'appender FILE a questo logger -->
+    </logger>
+    
+    <!-- Logger root -->
+    <root level="INFO">
+        <appender-ref ref="FILE" /> <!-- Associa l'appender FILE al logger root -->
+    </root>
+
+</configuration>

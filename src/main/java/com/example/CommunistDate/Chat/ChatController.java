@@ -5,11 +5,13 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.oauth2.jwt.Jwt;
+import org.springframework.validation.BindingResult;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.messaging.handler.annotation.MessageMapping;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -17,7 +19,6 @@ import com.example.CommunistDate.Users.User;
 import com.example.CommunistDate.Users.UserRepository;
 import io.jsonwebtoken.lang.Collections;
 import jakarta.validation.Valid;
-import org.springframework.validation.BindingResult;
 import java.util.Optional;
 import java.util.List;
 
@@ -30,7 +31,7 @@ public class ChatController {
     private final UserRepository userRepository;
 
     @Autowired
-    public ChatController(ChatService chatService, UserRepository userRepository) {
+    public ChatController(ChatService chatService, UserRepository userRepository, SimpMessagingTemplate messagingTemplate) {
         this.chatService = chatService;
         this.userRepository = userRepository;
     }
@@ -42,38 +43,68 @@ public class ChatController {
             logger.error("Ehi! Authentication object is null -1");
             return Collections.emptyList();
         }
-    
         if (!auth.isAuthenticated()) {
             logger.error("Ehi! Authentication object is null -2");
             return Collections.emptyList();
         }
-    
-        logger.debug("userId2 è vaffanculo.." + userId2);
         Jwt jwt = (Jwt) auth.getPrincipal();
         logger.debug("Here is the JWT instance: " + jwt);
         String username = jwt.getSubject();
         boolean isAdmin = jwt.getClaim("isAdmin");
-        logger.debug("This is the Username looking at the conversation, vaffanculo: " + username);
+        logger.debug("This is sender Username, vaffanculo: " + username);
         logger.debug("Let's check your authorities, vaffanculo: " + isAdmin);
         Optional<User> sender = userRepository.findByUsername(username);
         var userId1 = sender.get().getId();
-        logger.debug("This is the ID of the user looking at the conversation, vaffanculo: " + userId1);
+        logger.debug("This is the ID of the user, vaffanculo: " + userId1);
 
         return chatService.getChatHistory(userId1, userId2);
     }
 
-    @MessageMapping("/send")
+    // @MessageMapping("/send")
+    // public ResponseEntity<?> sendMessage(@Valid @RequestBody NewMessage newMessage, Authentication auth) {
+    //     logger.debug("Starting sendMessage method...");
+    //     if ((auth == null) || !(auth.getPrincipal() instanceof Jwt)) {
+    //         logger.error("Ehi! Authentication object is null");
+    //         return null;
+    //     }
+    //     if (!auth.isAuthenticated()) {
+    //         return null;
+    //     }
+    //     Jwt jwt = (Jwt) auth.getPrincipal();
+    //     logger.debug("Here is the JWT instance: " + jwt);
+    //     String username = jwt.getSubject();
+    //     boolean isAdmin = jwt.getClaim("isAdmin");
+    //     logger.debug("This is the Username, vaffanculo: " + username);
+    //     logger.debug("Let's check your authorities, vaffanculo: " + isAdmin);
+    //     Optional<User> sender = userRepository.findByUsername(username);
+    //     var senderId = sender.get().getId();
+    //     logger.debug("This is the ID of the user looking at the conversation, vaffanculo: " + senderId);
+    //     try {
+    //             Chat chat = chatService.sendMessage(senderId, newMessage);
+    //             logger.debug("here the chat object vaffanculo:" + chat.toString());
+    //             messagingTemplate.convertAndSendToUser(
+    //             newMessage.getReceiverId().toString(), // destinatario
+    //             "/queue/messages", // coda dell'utente
+    //             chat // contenuto del messaggio
+    //     );
+    //             logger.debug("Message sent to the Service");
+    //             return ResponseEntity.ok().build();     
+    //         } catch (Exception e) {
+    //             logger.error("Error sending message", e);
+    //             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error sending message: " + e.getMessage());
+    //             }
+    // }
+
+    @PostMapping("/send")
     public ResponseEntity<?> sendMessage(@Valid @RequestBody NewMessage newMessage, BindingResult result, Authentication auth) {
     logger.debug("Starting sendMessage method...");
     if ((auth == null) || !(auth.getPrincipal() instanceof Jwt)) {
         logger.error("Ehi! Authentication object is null");
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("You must be logged in to send a message -1");
     }
-
     if (!auth.isAuthenticated()) {
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("You must be logged in to send a message -2");
     }
-    
     if (result.hasErrors()) {
         return ResponseEntity.badRequest().body(result.getAllErrors());
     }
