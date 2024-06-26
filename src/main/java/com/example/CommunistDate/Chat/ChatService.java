@@ -6,6 +6,8 @@ import com.example.CommunistDate.Users.UserRepository;
 import jakarta.persistence.EntityNotFoundException;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -20,6 +22,19 @@ public class ChatService {
         this.chatRepository = chatRepository;
         this.userRepository = userRepository;
     }
+
+    public List<ChatGroup> getAllChatsGrouped(Long userId) {
+    List<Chat> chats = chatRepository.findBySenderIdOrReceiverId(userId, userId);
+    
+    Map<User, List<Chat>> groupedChats = chats.stream()
+            .collect(Collectors.groupingBy(chat -> 
+                chat.getSender().getId().equals(userId) ? chat.getReceiver() : chat.getSender()
+            ));
+    
+    return groupedChats.entrySet().stream()
+            .map(entry -> new ChatGroup(entry.getKey(), entry.getValue()))
+            .collect(Collectors.toList());
+}
 
     public List<Chat> getChatHistory(Long userId1, Long userId2) {
         return chatRepository.findBySenderIdAndReceiverIdOrReceiverIdAndSenderId(userId1, userId2, userId2, userId1);
