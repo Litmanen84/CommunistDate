@@ -8,7 +8,6 @@ import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.validation.BindingResult;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -31,7 +30,7 @@ public class ChatController {
     private final UserRepository userRepository;
 
     @Autowired
-    public ChatController(ChatService chatService, UserRepository userRepository, SimpMessagingTemplate messagingTemplate) {
+    public ChatController(ChatService chatService, UserRepository userRepository) {
         this.chatService = chatService;
         this.userRepository = userRepository;
     }
