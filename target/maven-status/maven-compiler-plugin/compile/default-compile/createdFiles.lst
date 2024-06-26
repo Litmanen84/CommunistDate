@@ -2,7 +2,6 @@ com/example/CommunistDate/Users/RegisterRequest.class
 com/example/CommunistDate/Users/UserService.class
 com/example/CommunistDate/config/AuthenticationErrorResponse.class
 com/example/CommunistDate/Chat/ChatService.class
-com/example/CommunistDate/config/WebSocketConfig.class
 com/example/CommunistDate/Chat/ChatController.class
 com/example/CommunistDate/Users/CustomUserDetailsService.class
 com/example/CommunistDate/config/WebSecurityConfig.class
