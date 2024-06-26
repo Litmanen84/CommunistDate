@@ -37,7 +37,7 @@ public class ChatService {
 }
 
     public List<Chat> getChatHistory(Long userId1, Long userId2) {
-        return chatRepository.findBySenderIdAndReceiverIdOrReceiverIdAndSenderId(userId1, userId2, userId2, userId1);
+        return chatRepository.findChatHistory(userId1, userId2);
     }
 
     public Chat sendMessage(Long senderId, NewMessage newMessage) {
