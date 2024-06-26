@@ -1,6 +1,8 @@
 package com.example.CommunistDate.Chat;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
+
 import java.time.LocalDateTime;
 import java.util.Objects;
 import com.example.CommunistDate.Users.User;
@@ -21,6 +23,7 @@ public class Chat {
     @JoinColumn(name = "receiver_id", nullable = false)
     public User receiver;
 
+    @NotNull
     @Column(name = "content", nullable = false)
     public String content;
 

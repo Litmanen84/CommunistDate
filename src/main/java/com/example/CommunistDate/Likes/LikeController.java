@@ -52,9 +52,6 @@ public class LikeController {
         Jwt jwt = (Jwt) auth.getPrincipal();
         String username = jwt.getSubject();
         var likingUser = userRepository.findByUsername(username);
-        if (likingUser.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("You must be logged in to send a message -3");
-        };
     
         Long likingUserId = likingUser.get().getId();
         try {
@@ -62,7 +59,7 @@ public class LikeController {
             return ResponseEntity.ok().build();
         } catch (Exception e) {
             logger.error("Error sending like", e);
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error sending message: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error making choice: " + e.getMessage());
             }
         }
 

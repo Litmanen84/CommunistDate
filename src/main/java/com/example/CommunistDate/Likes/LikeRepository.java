@@ -3,6 +3,7 @@ package com.example.CommunistDate.Likes;
 import java.util.List;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import com.example.CommunistDate.Users.User;
 
 public interface LikeRepository extends JpaRepository<Like, Long> {
    @Query("SELECT l FROM Like l WHERE l.userId1.id = :userId AND l.likes = true")
@@ -11,4 +12,5 @@ public interface LikeRepository extends JpaRepository<Like, Long> {
     @Query("SELECT l FROM Like l WHERE l.userId2.id = :userId AND l.likes = true")
     List<Like> findLikesByUserId2(Long userId);
 
+    List<Like> findAllByUserId1(User userId1);
 }
