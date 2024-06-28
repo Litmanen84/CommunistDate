@@ -57,30 +57,56 @@ public class UserController {
   //   return ResponseEntity.ok(user);
   // }
 
+  // @GetMapping("/random")
+  //   public ResponseEntity<Object> getRandomUser(Authentication auth) {
+  //       Optional<User> askingUserOptional = repository.findByUsername(auth.getName());
+  //       if (!askingUserOptional.isPresent()) {
+  //           return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found");
+  //       }
+  //       User askingUser = askingUserOptional.get();
+
+  //       List<Like> userLikes = likeRepository.findAllByUserId1(askingUser);
+  //       List<Long> excludedUserIds = userLikes.stream()
+  //           .map(like -> like.getUserId2().getId())
+  //           .collect(Collectors.toList());
+  //       excludedUserIds.add(askingUser.getId());
+
+  //       User user;
+  //       do {
+  //           user = repository.findRandomUserExcluding(excludedUserIds);
+  //           if (user == null) {
+  //               return ResponseEntity.status(HttpStatus.NOT_FOUND).body("No users found");
+  //           }
+  //       } while (user.getId().equals(askingUser.getId()));
+
+  //       return ResponseEntity.ok(user);
+  //   }
+
+
   @GetMapping("/random")
-    public ResponseEntity<Object> getRandomUser(Authentication auth) {
-        Optional<User> askingUserOptional = repository.findByUsername(auth.getName());
-        if (!askingUserOptional.isPresent()) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found");
-        }
-        User askingUser = askingUserOptional.get();
-
-        List<Like> userLikes = likeRepository.findAllByUserId1(askingUser);
-        List<Long> excludedUserIds = userLikes.stream()
-            .map(like -> like.getUserId2().getId())
-            .collect(Collectors.toList());
-        excludedUserIds.add(askingUser.getId());
-
-        User user;
-        do {
-            user = repository.findRandomUserExcluding(excludedUserIds);
-            if (user == null) {
-                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("No users found");
-            }
-        } while (user.getId().equals(askingUser.getId()));
-
-        return ResponseEntity.ok(user);
+public ResponseEntity<Object> getRandomUser(Authentication auth) {
+    Optional<User> askingUserOptional = repository.findByUsername(auth.getName());
+    if (!askingUserOptional.isPresent()) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found");
     }
+    User askingUser = askingUserOptional.get();
+
+    List<Like> userLikes = likeRepository.findAllByUserId1(askingUser);
+    List<Long> excludedUserIds = userLikes.stream()
+        .map(like -> like.getUserId2().getId())
+        .collect(Collectors.toList());
+    excludedUserIds.add(askingUser.getId());
+
+    logger.info("Excluded User IDs: " + excludedUserIds);
+
+    User user = repository.findRandomUserExcluding(excludedUserIds);
+    if (user == null) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body("No users found");
+    }
+    logger.info("Selected User ID: " + user.getId());
+
+    return ResponseEntity.ok(user);
+}
 
   @GetMapping("/profile")
   public ResponseEntity<Object> personalProfile(Authentication auth) {
