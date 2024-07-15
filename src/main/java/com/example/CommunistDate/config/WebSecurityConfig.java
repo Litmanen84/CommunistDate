@@ -37,7 +37,7 @@ public class WebSecurityConfig {
         return http
             .csrf(csrf -> csrf.disable())
             .authorizeHttpRequests(auth -> auth 
-            .requestMatchers("/users/register", "/users/login").permitAll()
+            .requestMatchers("/users/register", "/users/login", "/{id}/uploadProfilePicture").permitAll()
             .anyRequest().authenticated()
             )
             .oauth2ResourceServer(oauth2 -> oauth2.jwt(Customizer.withDefaults()))
