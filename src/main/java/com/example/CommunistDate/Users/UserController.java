@@ -48,7 +48,7 @@ public class UserController {
   }
 
   @GetMapping("/random")
-public ResponseEntity<Object> getRandomUser(Authentication auth) {
+  public ResponseEntity<Object> getRandomUser(Authentication auth) {
     Optional<User> askingUserOptional = repository.findByUsername(auth.getName());
     if (!askingUserOptional.isPresent()) {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found");
