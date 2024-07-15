@@ -1,11 +1,15 @@
 package com.example.CommunistDate.Users;
 
+import org.springframework.http.HttpStatus;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.BindingResult;
+import org.springframework.web.server.ResponseStatusException;
 import com.example.CommunistDate.config.ErrorResponse;
 import com.example.CommunistDate.config.FieldErrorResponse;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -17,7 +21,8 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 
 @Service
 public class UserService implements UserDetailsService {
-    
+
+    private static final Logger logger = LoggerFactory.getLogger(UserService.class);
     private final UserRepository repository;
     private final PasswordEncoder crypt;
     private final JwtService JwtService;
@@ -85,39 +90,77 @@ public class UserService implements UserDetailsService {
         return response;
     }
 
+    // public Map<String, Object> loginUser(LoginRequest loginRequest, BindingResult result) {
+    //     if (result.hasErrors()) {
+    //         List<FieldErrorResponse> fieldErrors = result.getFieldErrors().stream()
+    //             .map(fieldError -> new FieldErrorResponse(fieldError.getField(), fieldError.getDefaultMessage()))
+    //             .collect(Collectors.toList());
+    
+    //         ErrorResponse errorResponse = new ErrorResponse("Validation failed", fieldErrors);
+    //         throw new IllegalArgumentException(errorResponse.toString());
+    //     }
+    //         try {
+    //         authenticationManager.authenticate(
+    //             new UsernamePasswordAuthenticationToken(
+    //             loginRequest.getUsername(), 
+    //             loginRequest.getPassword())
+    //         );
+    //         User user = repository.findByUsername(loginRequest.getUsername())
+    //                         .orElseThrow(() -> new UsernameNotFoundException("User not found"));
+    
+    //         String jwtToken = JwtService.createJwtToken(user);
+    
+    //         var response = new HashMap<String, Object>();
+    //         response.put("user", user);
+    //         response.put("token", jwtToken);
+    //         return response;
+    //         }
+            
+    //         catch (Exception e) {
+    //         System.out.println("There is an Exception Strunz:");
+    //         e.printStackTrace();
+    //         }
+            
+    //         return null;
+    // }
+
     public Map<String, Object> loginUser(LoginRequest loginRequest, BindingResult result) {
-        if (result.hasErrors()) {
-            List<FieldErrorResponse> fieldErrors = result.getFieldErrors().stream()
+    // Verifica errori di validazione
+    if (result.hasErrors()) {
+        List<FieldErrorResponse> fieldErrors = result.getFieldErrors().stream()
                 .map(fieldError -> new FieldErrorResponse(fieldError.getField(), fieldError.getDefaultMessage()))
                 .collect(Collectors.toList());
-    
-            ErrorResponse errorResponse = new ErrorResponse("Validation failed", fieldErrors);
-            throw new IllegalArgumentException(errorResponse.toString());
-        }
-            try {
-            authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(
-                loginRequest.getUsername(), 
-                loginRequest.getPassword())
-            );
-            User user = repository.findByUsername(loginRequest.getUsername())
-                            .orElseThrow(() -> new UsernameNotFoundException("User not found"));
-    
-            String jwtToken = JwtService.createJwtToken(user);
-    
-            var response = new HashMap<String, Object>();
-            response.put("user", user);
-            response.put("token", jwtToken);
-            return response;
-            }
-            
-            catch (Exception e) {
-            System.out.println("There is an Exception:");
-            e.printStackTrace();
-            }
-            
-            return null;
+
+        ErrorResponse errorResponse = new ErrorResponse("Validation failed", fieldErrors);
+        throw new IllegalArgumentException(errorResponse.toString());
     }
+
+    try {
+        // Esegue l'autenticazione utilizzando l'AuthenticationManager
+        authenticationManager.authenticate(
+            new UsernamePasswordAuthenticationToken(
+                loginRequest.getUsername(),
+                loginRequest.getPassword())
+        );
+        logger.debug("Babbà ecco la password: " + loginRequest.getPassword());
+
+        User user = repository.findByUsername(loginRequest.getUsername())
+                            .orElseThrow(() -> new UsernameNotFoundException("User not found"));
+
+        String jwtToken = JwtService.createJwtToken(user);
+        logger.debug("Babbà, ecco il token: " + jwtToken);
+        
+        Map<String, Object> response = new HashMap<>();
+        response.put("user", user);
+        response.put("token", jwtToken);
+        return response;
+    } catch (UsernameNotFoundException e) {
+
+        throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Invalid credentials Babbà", e);
+    } catch (Exception e) {
+        throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Error during login babbà", e);
+    }
+}
 
     public User findByUsername(String username) {
         return repository.findByUsername(username)

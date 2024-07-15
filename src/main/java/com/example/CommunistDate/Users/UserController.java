@@ -17,11 +17,10 @@ import org.springframework.validation.FieldError;
 import jakarta.validation.Valid;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.oauth2.jwt.Jwt;
-
 import com.cloudinary.Cloudinary;
 import com.cloudinary.utils.ObjectUtils;
 import java.io.IOException;
+import org.springframework.security.oauth2.jwt.Jwt;
 
 @RestController
 @RequestMapping("/users")
@@ -114,40 +113,40 @@ public class UserController {
           }
       }
 
-  //   @PostMapping("/{id}/uploadProfilePicture")
-  //   public ResponseEntity<String> uploadProfilePicture(@PathVariable Long id, @RequestParam("profilePicture") MultipartFile profilePicture, Authentication auth) {
-  //     logger.debug("Starting uploading picture...");
-  //     if ((auth == null) || !(auth.getPrincipal() instanceof Jwt)) {
-  //         logger.error("Ehi! Authentication object is null");
-  //         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("You must be logged in to send a message -1");
-  //     }
-  //     if (!auth.isAuthenticated()) {
-  //         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("You must be logged in to send a message -2");
-  //     }
-  //     if (profilePicture.isEmpty() || !isValidFileType(profilePicture)) {
-  //       return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Invalid file");
-  //   }
-  //       try {
-  //           Map uploadResult = cloudinary.uploader().upload(profilePicture.getBytes(), ObjectUtils.emptyMap());
-  //           String url = (String) uploadResult.get("url");
+    @PostMapping("/{id}/uploadProfilePicture")
+    public ResponseEntity<String> uploadProfilePicture(@PathVariable Long id, @RequestParam("profilePicture") MultipartFile profilePicture, Authentication auth) {
+      logger.debug("Starting uploading picture...");
+      if ((auth == null) || !(auth.getPrincipal() instanceof Jwt)) {
+          logger.error("Ehi! Authentication object is null");
+          return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("You must be logged in to send a message -1");
+      }
+      if (!auth.isAuthenticated()) {
+          return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("You must be logged in to send a message -2");
+      }
+      if (profilePicture.isEmpty() || !isValidFileType(profilePicture)) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Invalid file");
+    }
+        try {
+            Map uploadResult = cloudinary.uploader().upload(profilePicture.getBytes(), ObjectUtils.emptyMap());
+            String url = (String) uploadResult.get("url");
 
-  //           User user = repository.findById(id).orElseThrow(() -> new RuntimeException("User not found"));
-  //           user.setProfilePicture(url);
-  //           repository.save(user);
+            User user = repository.findById(id).orElseThrow(() -> new RuntimeException("User not found"));
+            user.setProfilePicture(url);
+            repository.save(user);
 
-  //           return ResponseEntity.ok("Profile picture uploaded successfully");
-  //       } catch (IOException e) {
-  //           return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error uploading profile picture");
-  //       }
-  //   }
+            return ResponseEntity.ok("Profile picture uploaded successfully");
+        } catch (IOException e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error uploading profile picture");
+        }
+    }
 
-  //   @GetMapping("/{id}/profilePicture")
-  //   public ResponseEntity<String> getProfilePicture(@PathVariable Long id) {
-  //       User user = repository.findById(id).orElseThrow(() -> new RuntimeException("User not found"));
-  //       return ResponseEntity.ok(user.getProfilePicture());
-  //   }
-  //   private boolean isValidFileType(MultipartFile file) {
-  //     String contentType = file.getContentType();
-  //     return contentType != null && contentType.startsWith("image");
-  // }
+    @GetMapping("/{id}/profilePicture")
+    public ResponseEntity<String> getProfilePicture(@PathVariable Long id) {
+        User user = repository.findById(id).orElseThrow(() -> new RuntimeException("User not found"));
+        return ResponseEntity.ok(user.getProfilePicture());
+    }
+    private boolean isValidFileType(MultipartFile file) {
+      String contentType = file.getContentType();
+      return contentType != null && contentType.startsWith("image");
+  }
 }
