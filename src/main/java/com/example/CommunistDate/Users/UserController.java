@@ -167,4 +167,28 @@ public class UserController {
       String contentType = file.getContentType();
       return contentType != null && contentType.startsWith("image");
   }
+
+  @DeleteMapping("/{id}")
+  public ResponseEntity<Object> deleteUser(@PathVariable long id, Authentication auth) {
+    if ((auth == null) || !(auth.getPrincipal() instanceof Jwt)) {
+      logger.error("Ehi! Authentication object is null");
+      return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("You must be logged in to send a message -1");
+    }
+    if (!auth.isAuthenticated()) {
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("You must be logged in to send a message -2");
+    }
+    User currentUser = repository.findByUsername(auth.getName()).orElseThrow(() -> new RuntimeException("User not found"));
+    if (!auth.getName().equals(currentUser.getUsername()) && !currentUser.getIsAdmin()) {
+      return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("You must be an admin to delete a user");
+    } else if (auth.getName().equals(currentUser.getUsername()) || currentUser.getIsAdmin()) {
+    try {
+      User userToDelete = repository.findById(id).orElseThrow(() -> new RuntimeException("User not found"));
+      repository.delete(userToDelete);
+      return ResponseEntity.ok("User deleted successfully");
+    } catch (Exception e) {
+      throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage(), e);
+    }
+  }
+  return ResponseEntity.ok().build();
+  }
 }
