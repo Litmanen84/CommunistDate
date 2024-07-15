@@ -79,7 +79,7 @@ public class UserService implements UserDetailsService {
         user.setPoliticalBelief(registerRequest.getPoliticalBelief());
         user.setIsAdmin(false);
         user.setCommunismLevel(registerRequest.getCommunismLevel().orElse(0));
-        user.setProfilePicture("https://res.cloudinary.com/dfmlqauhg/image/upload/v1721046090/Cccp_hqxf4k.webp");
+        user.setProfilePicture("https://res.cloudinary.com/dfmlqauhg/image/upload/v1721048778/WhatsApp_Image_2024-07-15_at_15.05.06_z6xxrz.jpg");
     
         repository.save(user);
         String jwtToken = JwtService.createJwtToken(user);
