@@ -115,8 +115,8 @@ public ResponseEntity<Object> getRandomUser(Authentication auth) {
       }
 
     @PostMapping("/{id}/uploadProfilePicture")
-    public ResponseEntity<String> uploadProfilePicture(@PathVariable Long id, @RequestParam("file") MultipartFile file, Authentication auth) {
-      logger.debug("Starting sendMessage method...");
+    public ResponseEntity<String> uploadProfilePicture(@PathVariable Long id, @RequestParam("file") MultipartFile profilePicture, Authentication auth) {
+      logger.debug("Starting uploading picture...");
       if ((auth == null) || !(auth.getPrincipal() instanceof Jwt)) {
           logger.error("Ehi! Authentication object is null");
           return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("You must be logged in to send a message -1");
@@ -124,11 +124,11 @@ public ResponseEntity<Object> getRandomUser(Authentication auth) {
       if (!auth.isAuthenticated()) {
           return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("You must be logged in to send a message -2");
       }
-      if (file.isEmpty()) {
+      if (profilePicture.isEmpty()) {
           return ResponseEntity.badRequest().body("File is empty, maccarò");
       }
         try {
-            Map uploadResult = cloudinary.uploader().upload(file.getBytes(), ObjectUtils.emptyMap());
+            Map uploadResult = cloudinary.uploader().upload(profilePicture.getBytes(), ObjectUtils.emptyMap());
             String url = (String) uploadResult.get("url");
 
             User user = repository.findById(id).orElseThrow(() -> new RuntimeException("User not found"));
