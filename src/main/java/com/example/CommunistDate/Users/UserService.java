@@ -79,6 +79,7 @@ public class UserService implements UserDetailsService {
         user.setPoliticalBelief(registerRequest.getPoliticalBelief());
         user.setIsAdmin(false);
         user.setCommunismLevel(registerRequest.getCommunismLevel().orElse(0));
+        user.setProfilePicture("https://res.cloudinary.com/dfmlqauhg/image/upload/v1721046090/Cccp_hqxf4k.webp");
     
         repository.save(user);
         String jwtToken = JwtService.createJwtToken(user);
@@ -89,40 +90,6 @@ public class UserService implements UserDetailsService {
     
         return response;
     }
-
-    // public Map<String, Object> loginUser(LoginRequest loginRequest, BindingResult result) {
-    //     if (result.hasErrors()) {
-    //         List<FieldErrorResponse> fieldErrors = result.getFieldErrors().stream()
-    //             .map(fieldError -> new FieldErrorResponse(fieldError.getField(), fieldError.getDefaultMessage()))
-    //             .collect(Collectors.toList());
-    
-    //         ErrorResponse errorResponse = new ErrorResponse("Validation failed", fieldErrors);
-    //         throw new IllegalArgumentException(errorResponse.toString());
-    //     }
-    //         try {
-    //         authenticationManager.authenticate(
-    //             new UsernamePasswordAuthenticationToken(
-    //             loginRequest.getUsername(), 
-    //             loginRequest.getPassword())
-    //         );
-    //         User user = repository.findByUsername(loginRequest.getUsername())
-    //                         .orElseThrow(() -> new UsernameNotFoundException("User not found"));
-    
-    //         String jwtToken = JwtService.createJwtToken(user);
-    
-    //         var response = new HashMap<String, Object>();
-    //         response.put("user", user);
-    //         response.put("token", jwtToken);
-    //         return response;
-    //         }
-            
-    //         catch (Exception e) {
-    //         System.out.println("There is an Exception Strunz:");
-    //         e.printStackTrace();
-    //         }
-            
-    //         return null;
-    // }
 
     public Map<String, Object> loginUser(LoginRequest loginRequest, BindingResult result) {
     // Verifica errori di validazione
