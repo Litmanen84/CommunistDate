@@ -81,6 +81,24 @@ public class UserController {
     response.put("User", user);
 
     return ResponseEntity.ok(response);
+  }
+  
+  @GetMapping("/profile/{id}")
+  public ResponseEntity<Object> profile(@PathVariable long id, Authentication auth) {
+    if ((auth == null) || !(auth.getPrincipal() instanceof Jwt)) {
+      logger.error("Ehi! Authentication object is null");
+      return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("You must be logged in to send a message -1");
+    }
+    if (!auth.isAuthenticated()) {
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("You must be logged in to send a message -2");
+    }
+    
+    try {
+    User user = repository.findById(id).orElseThrow(() -> new RuntimeException("User not found"));
+        return ResponseEntity.ok(user);
+      } catch (Exception e) {
+        throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage(), e);
+      }
   }  
 
   @PostMapping("/register")
