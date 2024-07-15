@@ -113,7 +113,7 @@ public class UserController {
           }
       }
 
-    @PostMapping("/{id}/uploadProfilePicture")
+    @PutMapping("/{id}/uploadProfilePicture")
     public ResponseEntity<String> uploadProfilePicture(@PathVariable Long id, @RequestParam("profilePicture") MultipartFile profilePicture, Authentication auth) {
       logger.debug("Starting uploading picture...");
       if ((auth == null) || !(auth.getPrincipal() instanceof Jwt)) {
