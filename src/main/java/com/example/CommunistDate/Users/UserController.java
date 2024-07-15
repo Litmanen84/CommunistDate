@@ -17,10 +17,11 @@ import org.springframework.validation.FieldError;
 import jakarta.validation.Valid;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.oauth2.jwt.Jwt;
+
 import com.cloudinary.Cloudinary;
 import com.cloudinary.utils.ObjectUtils;
 import java.io.IOException;
-import java.util.Map;
 
 @RestController
 @RequestMapping("/users")
@@ -114,7 +115,18 @@ public ResponseEntity<Object> getRandomUser(Authentication auth) {
       }
 
     @PostMapping("/{id}/uploadProfilePicture")
-    public ResponseEntity<String> uploadProfilePicture(@PathVariable Long id, @RequestParam("file") MultipartFile file) {
+    public ResponseEntity<String> uploadProfilePicture(@PathVariable Long id, @RequestParam("file") MultipartFile file, Authentication auth) {
+      logger.debug("Starting sendMessage method...");
+      if ((auth == null) || !(auth.getPrincipal() instanceof Jwt)) {
+          logger.error("Ehi! Authentication object is null");
+          return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("You must be logged in to send a message -1");
+      }
+      if (!auth.isAuthenticated()) {
+          return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("You must be logged in to send a message -2");
+      }
+      if (file.isEmpty()) {
+          return ResponseEntity.badRequest().body("File is empty, maccarò");
+      }
         try {
             Map uploadResult = cloudinary.uploader().upload(file.getBytes(), ObjectUtils.emptyMap());
             String url = (String) uploadResult.get("url");
