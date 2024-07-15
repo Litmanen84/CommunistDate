@@ -22,6 +22,7 @@ com/example/CommunistDate/Chat/ChatRepository.class
 com/example/CommunistDate/config/ValidationException.class
 com/example/CommunistDate/Chat/Chat.class
 com/example/CommunistDate/Users/JwtService.class
+com/example/CommunistDate/config/CloudinaryConfig.class
 com/example/CommunistDate/Users/CustomUserDetails.class
 com/example/CommunistDate/Chat/NewMessage.class
 com/example/CommunistDate/config/CorsConfig.class

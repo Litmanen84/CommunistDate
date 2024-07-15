@@ -10,12 +10,17 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import jakarta.validation.Valid;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
+import com.cloudinary.Cloudinary;
+import com.cloudinary.utils.ObjectUtils;
+import java.io.IOException;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/users")
@@ -24,13 +29,15 @@ public class UserController {
   private final UserRepository repository;
   private final LikeRepository likeRepository;
   private final UserService service;
+  private final Cloudinary cloudinary;
   private static final Logger logger = LoggerFactory.getLogger(UserController.class);
 
   @Autowired
-  UserController(UserRepository repository, LikeRepository likeRepository, UserService service) {
+  UserController(UserRepository repository, LikeRepository likeRepository, UserService service, Cloudinary cloudinary) {
     this.repository = repository;
     this.likeRepository = likeRepository;
     this.service = service;
+    this.cloudinary = cloudinary;
   } 
 
   @PreAuthorize("hasRole('ROLE_ADMIN')")
@@ -38,50 +45,6 @@ public class UserController {
   public List<User> getAllUsers() {
     return repository.findAll();
   }
-
-  // @GetMapping("/random")
-  // public ResponseEntity<Object> getRandomUser(Authentication auth) {
-  //   Optional<User> askingUserOptional = repository.findByUsername(auth.getName());
-  //   if (!askingUserOptional.isPresent()) {
-  //       return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found");
-  //   }
-  //   User askingUser = askingUserOptional.get();
-  //   User user;
-  //   do {
-  //       user = repository.findRandomUser();
-  //       if (user == null) {
-  //           return ResponseEntity.status(HttpStatus.NOT_FOUND).body("No users found");
-  //       }
-  //   } while (user.getUsername().equals(askingUser.getUsername()));
-    
-  //   return ResponseEntity.ok(user);
-  // }
-
-  // @GetMapping("/random")
-  //   public ResponseEntity<Object> getRandomUser(Authentication auth) {
-  //       Optional<User> askingUserOptional = repository.findByUsername(auth.getName());
-  //       if (!askingUserOptional.isPresent()) {
-  //           return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found");
-  //       }
-  //       User askingUser = askingUserOptional.get();
-
-  //       List<Like> userLikes = likeRepository.findAllByUserId1(askingUser);
-  //       List<Long> excludedUserIds = userLikes.stream()
-  //           .map(like -> like.getUserId2().getId())
-  //           .collect(Collectors.toList());
-  //       excludedUserIds.add(askingUser.getId());
-
-  //       User user;
-  //       do {
-  //           user = repository.findRandomUserExcluding(excludedUserIds);
-  //           if (user == null) {
-  //               return ResponseEntity.status(HttpStatus.NOT_FOUND).body("No users found");
-  //           }
-  //       } while (user.getId().equals(askingUser.getId()));
-
-  //       return ResponseEntity.ok(user);
-  //   }
-
 
   @GetMapping("/random")
 public ResponseEntity<Object> getRandomUser(Authentication auth) {
@@ -149,4 +112,26 @@ public ResponseEntity<Object> getRandomUser(Authentication auth) {
                   HttpStatus.UNAUTHORIZED, e.getMessage(), e);
           }
       }
+
+    @PostMapping("/{id}/uploadProfilePicture")
+    public ResponseEntity<String> uploadProfilePicture(@PathVariable Long id, @RequestParam("file") MultipartFile file) {
+        try {
+            Map uploadResult = cloudinary.uploader().upload(file.getBytes(), ObjectUtils.emptyMap());
+            String url = (String) uploadResult.get("url");
+
+            User user = repository.findById(id).orElseThrow(() -> new RuntimeException("User not found"));
+            user.setProfilePicture(url);
+            repository.save(user);
+
+            return ResponseEntity.ok("Profile picture uploaded successfully");
+        } catch (IOException e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error uploading profile picture");
+        }
+    }
+
+    @GetMapping("/{id}/profilePicture")
+    public ResponseEntity<String> getProfilePicture(@PathVariable Long id) {
+        User user = repository.findById(id).orElseThrow(() -> new RuntimeException("User not found"));
+        return ResponseEntity.ok(user.getProfilePicture());
+    }
 }

@@ -71,14 +71,14 @@ public class User implements UserDetails {
     private String communismRelationship;
 
     @Column(name = "profile_picture", nullable = true)
-    private byte[] profilePicture;
+    private String profilePicture;
 
     @Column(name = "isadmin", nullable = true, columnDefinition = "BOOLEAN DEFAULT FALSE")
     private boolean isAdmin;
 
     public User() {}
 
-    public User(String username, String password, String email, String gender, String sexualOrientation, String city, String nationality, int age, String countryOfResidence, String language, String second_language, String third_language, String fourth_language, String politicalBelief, Integer communismLevel, boolean partnerShare, String biography, String communismRelationship, byte[] profilePicture, boolean isAdmin) {
+    public User(String username, String password, String email, String gender, String sexualOrientation, String city, String nationality, int age, String countryOfResidence, String language, String second_language, String third_language, String fourth_language, String politicalBelief, Integer communismLevel, boolean partnerShare, String biography, String communismRelationship, String profilePicture, boolean isAdmin) {
         this.username = username;
         this.password = password;
         this.email = email;
@@ -304,11 +304,11 @@ public void setCommunismRelationship(String communismRelationship) {
     this.communismRelationship = communismRelationship;
 }
 
-public byte[] getProfilePicture() {
+public String getProfilePicture() {
     return profilePicture;
 }
 
-public void setProfilePicture(byte[] profilePicture) {
+public void setProfilePicture(String profilePicture) {
     this.profilePicture = profilePicture;
 }
 
