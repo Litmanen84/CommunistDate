@@ -105,6 +105,20 @@ public class ChatController {
         return chatService.getChatHistory(userId1, userId2);
     }
 
+    // @GetMapping("/spyHistory/{id1}&{id2}")
+    // public List<Chat> spyHistory(@PathVariable("id1") Long userId1, @PathVariable ("id2") Long userId2, Authentication auth) {
+    //     logger.debug("userId1 e userId2 sono Cristo.." + userId1 + " e " + userId2);
+    //     if ((auth == null) || !(auth.getPrincipal() instanceof Jwt)) {
+    //         logger.error("Ehi! Authentication object is null -1");
+    //         return Collections.emptyList();
+    //     }
+    //     if (!auth.isAuthenticated()) {
+    //         logger.error("Ehi! Authentication object is null -2");
+    //         return Collections.emptyList();
+    //     }
+    //     return chatService.getChatHistory(userId1, userId2);
+    // }
+
     @PostMapping("/send")
     public ResponseEntity<?> sendMessage(@Valid @RequestBody NewMessage newMessage, BindingResult result, Authentication auth) {
     logger.debug("Starting sendMessage method...");
