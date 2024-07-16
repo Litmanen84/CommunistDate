@@ -18,6 +18,7 @@ com/example/CommunistDate/Users/User.class
 com/example/CommunistDate/config/FieldErrorResponse.class
 com/example/CommunistDate/Likes/LikeRequest.class
 com/example/CommunistDate/config/GlobalExceptionHandler.class
+com/example/CommunistDate/Users/UpdateProfile.class
 com/example/CommunistDate/Chat/ChatRepository.class
 com/example/CommunistDate/config/ValidationException.class
 com/example/CommunistDate/Chat/Chat.class

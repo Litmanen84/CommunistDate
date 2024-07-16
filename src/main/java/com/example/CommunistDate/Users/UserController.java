@@ -14,6 +14,8 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
+import org.springframework.validation.annotation.Validated;
+
 import jakarta.validation.Valid;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
@@ -21,6 +23,7 @@ import com.cloudinary.Cloudinary;
 import com.cloudinary.utils.ObjectUtils;
 import java.io.IOException;
 import org.springframework.security.oauth2.jwt.Jwt;
+import org.springframework.util.StringUtils;
 
 @RestController
 @RequestMapping("/users")
@@ -131,6 +134,59 @@ public class UserController {
           }
       }
 
+    @PutMapping("/{id}")
+    public ResponseEntity<?> updateUser(@PathVariable long id, @Validated @RequestBody UpdateProfile updateProfile, Authentication auth, BindingResult result) {
+      if (result.hasErrors()) {
+        FieldError fieldError = result.getFieldError();
+        if (fieldError != null) {
+          logger.debug("Validation error on field " + fieldError.getField() + ": " + fieldError.getDefaultMessage() + " " + fieldError.getCode());
+        }
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(result.getAllErrors());
+      }  
+      if (auth == null || !(auth.getPrincipal() instanceof Jwt)) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("You must be logged in to update your profile -1");
+        }
+      if (!auth.isAuthenticated()) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("You must be logged in to update your profile -2");
+        }
+        
+      User user = repository.findByUsername(auth.getName())
+                .orElseThrow(() -> new RuntimeException("User not found"));
+        
+      if (!auth.getName().equals(user.getUsername())) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("You are not authorized to update this profile");
+        }
+        
+      try {
+          if (StringUtils.hasText(updateProfile.getGender())) {
+              user.setGender(updateProfile.getGender());
+          }
+          if (StringUtils.hasText(updateProfile.getCity())) {
+              user.setCity(updateProfile.getCity());
+          }
+          if (StringUtils.hasText(updateProfile.getCountryOfResidence())) {
+              user.setCountryOfResidence(updateProfile.getCountryOfResidence());
+          }
+          if (StringUtils.hasText(updateProfile.getLanguage())) {
+              user.setLanguage(updateProfile.getLanguage());
+          }
+          if (StringUtils.hasText(updateProfile.getPoliticalBelief())) {
+              user.setPoliticalBelief(updateProfile.getPoliticalBelief());
+          }
+          if (updateProfile.getCommunismLevel() != null) {
+              user.setCommunismLevel(updateProfile.getCommunismLevel());
+          }
+          if (!Objects.equals(updateProfile.getPartnerShare(), null)) {
+              user.setPartnerShare(updateProfile.getPartnerShare());
+          }
+          
+          repository.save(user);
+          return ResponseEntity.ok("User updated successfully");
+      } catch (Exception e) {
+          throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage(), e);
+      }
+    }
+
     @PutMapping("/{id}/uploadProfilePicture")
     public ResponseEntity<String> uploadProfilePicture(@PathVariable Long id, @RequestParam("profilePicture") MultipartFile profilePicture, Authentication auth) {
       logger.debug("Starting uploading picture...");
@@ -168,27 +224,27 @@ public class UserController {
       return contentType != null && contentType.startsWith("image");
   }
 
-  @DeleteMapping("/{id}")
-  public ResponseEntity<Object> deleteUser(@PathVariable long id, Authentication auth) {
-    if ((auth == null) || !(auth.getPrincipal() instanceof Jwt)) {
-      logger.error("Ehi! Authentication object is null");
-      return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("You must be logged in to send a message -1");
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Object> deleteUser(@PathVariable long id, Authentication auth) {
+      if ((auth == null) || !(auth.getPrincipal() instanceof Jwt)) {
+        logger.error("Ehi! Authentication object is null");
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("You must be logged in to send a message -1");
+      }
+      if (!auth.isAuthenticated()) {
+          return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("You must be logged in to send a message -2");
+      }
+      User currentUser = repository.findByUsername(auth.getName()).orElseThrow(() -> new RuntimeException("User not found"));
+      if (!auth.getName().equals(currentUser.getUsername()) && !currentUser.getIsAdmin()) {
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("You must be an admin to delete a user");
+      } else if (auth.getName().equals(currentUser.getUsername()) || currentUser.getIsAdmin()) {
+      try {
+        User userToDelete = repository.findById(id).orElseThrow(() -> new RuntimeException("User not found"));
+        repository.delete(userToDelete);
+        return ResponseEntity.ok("User deleted successfully");
+      } catch (Exception e) {
+        throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage(), e);
+      }
     }
-    if (!auth.isAuthenticated()) {
-        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("You must be logged in to send a message -2");
+    return ResponseEntity.ok().build();
     }
-    User currentUser = repository.findByUsername(auth.getName()).orElseThrow(() -> new RuntimeException("User not found"));
-    if (!auth.getName().equals(currentUser.getUsername()) && !currentUser.getIsAdmin()) {
-      return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("You must be an admin to delete a user");
-    } else if (auth.getName().equals(currentUser.getUsername()) || currentUser.getIsAdmin()) {
-    try {
-      User userToDelete = repository.findById(id).orElseThrow(() -> new RuntimeException("User not found"));
-      repository.delete(userToDelete);
-      return ResponseEntity.ok("User deleted successfully");
-    } catch (Exception e) {
-      throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage(), e);
-    }
-  }
-  return ResponseEntity.ok().build();
-  }
 }
