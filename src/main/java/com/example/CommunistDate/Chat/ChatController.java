@@ -60,6 +60,27 @@ public class ChatController {
         return chatService.getAllChatsGrouped(userId);
     }
 
+    @GetMapping("/spyChat/{id}")
+    public List<ChatGroup> spyChat(@PathVariable ("id") Long userId, Authentication auth) {
+        if ((auth == null) || !(auth.getPrincipal() instanceof Jwt)) {
+            logger.error("Ehi! Authentication object is null -1");
+            return Collections.emptyList();
+        }
+        if (!auth.isAuthenticated()) {
+            logger.error("Ehi! You are not authenticated -2");
+            return Collections.emptyList();
+        }
+        Jwt jwt = (Jwt) auth.getPrincipal();
+        logger.debug("Here is the JWT instance, Ciccio: " + jwt);
+        String username = jwt.getSubject();
+        logger.debug("This is the Username, Ciccio: " + username);
+        Optional<User> user = userRepository.findById(userId);
+        if (user.isEmpty()) {
+            return Collections.emptyList();
+        }
+        return chatService.spyChat(userId);
+    }
+
     @GetMapping("/history/{id}")
     public List<Chat> getChatHistory(@PathVariable("id") Long userId2, Authentication auth) {
         logger.debug("userId2 è Cristo.." + userId2);

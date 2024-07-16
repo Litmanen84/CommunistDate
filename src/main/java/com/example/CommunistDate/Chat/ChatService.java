@@ -36,6 +36,19 @@ public class ChatService {
             .collect(Collectors.toList());
 }
 
+    public List<ChatGroup> spyChat(Long userId) {
+        List<Chat> chats = chatRepository.findBySenderIdOrReceiverId(userId, userId);
+        
+        Map<User, List<Chat>> groupedChats = chats.stream()
+                .collect(Collectors.groupingBy(chat -> 
+                    chat.getSender().getId().equals(userId) ? chat.getReceiver() : chat.getSender()
+                ));
+        
+        return groupedChats.entrySet().stream()
+                .map(entry -> new ChatGroup(entry.getKey(), entry.getValue()))
+                .collect(Collectors.toList());
+    }
+
     public List<Chat> getChatHistory(Long userId1, Long userId2) {
         return chatRepository.findChatHistory(userId1, userId2);
     }
