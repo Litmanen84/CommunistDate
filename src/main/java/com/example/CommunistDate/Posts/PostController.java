@@ -30,8 +30,13 @@ public class PostController {
     } 
 
     @GetMapping
-    public List<Post> getAllPosts() {
-        return service.getAllPosts();
+    public ResponseEntity<List<Post>> getAllPosts(Authentication auth) {
+        if (auth != null && auth.isAuthenticated()) {
+            List<Post> posts = service.getAllPosts();
+            return ResponseEntity.ok(posts);
+        } else {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
     }
 
     // @GetMapping("/{id}")
