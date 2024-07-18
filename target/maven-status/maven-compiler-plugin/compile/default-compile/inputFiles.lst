@@ -10,6 +10,15 @@
 /home/litmanen/becode-code/CommunistDate/src/main/java/com/example/CommunistDate/Likes/LikeRepository.java
 /home/litmanen/becode-code/CommunistDate/src/main/java/com/example/CommunistDate/Likes/LikeRequest.java
 /home/litmanen/becode-code/CommunistDate/src/main/java/com/example/CommunistDate/Likes/LikeService.java
+/home/litmanen/becode-code/CommunistDate/src/main/java/com/example/CommunistDate/Posts/CreatePostRequest.java
+/home/litmanen/becode-code/CommunistDate/src/main/java/com/example/CommunistDate/Posts/DeletePostRequest.java
+/home/litmanen/becode-code/CommunistDate/src/main/java/com/example/CommunistDate/Posts/Post.java
+/home/litmanen/becode-code/CommunistDate/src/main/java/com/example/CommunistDate/Posts/PostController.java
+/home/litmanen/becode-code/CommunistDate/src/main/java/com/example/CommunistDate/Posts/PostNotFoundAdvice.java
+/home/litmanen/becode-code/CommunistDate/src/main/java/com/example/CommunistDate/Posts/PostNotFoundException.java
+/home/litmanen/becode-code/CommunistDate/src/main/java/com/example/CommunistDate/Posts/PostRepository.java
+/home/litmanen/becode-code/CommunistDate/src/main/java/com/example/CommunistDate/Posts/PostService.java
+/home/litmanen/becode-code/CommunistDate/src/main/java/com/example/CommunistDate/Posts/UpdatePostRequest.java
 /home/litmanen/becode-code/CommunistDate/src/main/java/com/example/CommunistDate/Users/CustomUserDetails.java
 /home/litmanen/becode-code/CommunistDate/src/main/java/com/example/CommunistDate/Users/CustomUserDetailsService.java
 /home/litmanen/becode-code/CommunistDate/src/main/java/com/example/CommunistDate/Users/JwtService.java
