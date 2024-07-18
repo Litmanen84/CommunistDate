@@ -134,7 +134,7 @@ public class UserController {
     }
 
   @PutMapping("/{id}")
-  public ResponseEntity<?> updateUser(@PathVariable long id, @Validated @RequestBody UpdateProfile updateProfile, Authentication auth, BindingResult result) {
+  public ResponseEntity<?> updateUser(@PathVariable long id, @Validated @RequestBody UpdateInfo updateInfo, Authentication auth, BindingResult result) {
     if (result.hasErrors()) {
       FieldError fieldError = result.getFieldError();
       if (fieldError != null) {
@@ -157,26 +157,30 @@ public class UserController {
       }
       
     try {
-        if (StringUtils.hasText(updateProfile.getGender())) {
-            user.setGender(updateProfile.getGender());
+        if (StringUtils.hasText(updateInfo.getGender())) {
+            user.setGender(updateInfo.getGender());
         }
-        if (StringUtils.hasText(updateProfile.getCity())) {
-            user.setCity(updateProfile.getCity());
+        if (StringUtils.hasText(updateInfo.getCity())) {
+            user.setCity(updateInfo.getCity());
         }
-        if (StringUtils.hasText(updateProfile.getCountryOfResidence())) {
-            user.setCountryOfResidence(updateProfile.getCountryOfResidence());
+        if (StringUtils.hasText(updateInfo.getCountryOfResidence())) {
+            user.setCountryOfResidence(updateInfo.getCountryOfResidence());
         }
-        if (StringUtils.hasText(updateProfile.getLanguage())) {
-            user.setLanguage(updateProfile.getLanguage());
+        if (StringUtils.hasText(updateInfo.getLanguage())) {
+            user.setLanguage(updateInfo.getLanguage());
         }
-        if (StringUtils.hasText(updateProfile.getPoliticalBelief())) {
-            user.setPoliticalBelief(updateProfile.getPoliticalBelief());
+        if (StringUtils.hasText(updateInfo.getPoliticalBelief())) {
+            user.setPoliticalBelief(updateInfo.getPoliticalBelief());
         }
-        if (updateProfile.getCommunismLevel() != null) {
-            user.setCommunismLevel(updateProfile.getCommunismLevel());
+        if (updateInfo.getCommunismLevel() != null) {
+            user.setCommunismLevel(updateInfo.getCommunismLevel());
         }
-        if (!Objects.equals(updateProfile.getPartnerShare(), null)) {
-            user.setPartnerShare(updateProfile.getPartnerShare());
+        if (!Objects.equals(updateInfo.getPartnerShare(), null)) {
+            user.setPartnerShare(updateInfo.getPartnerShare());
+        }
+
+        if (StringUtils.hasText(updateInfo.getDescription())) {
+            user.setDescription(updateInfo.getDescription());
         }
         
         repository.save(user);

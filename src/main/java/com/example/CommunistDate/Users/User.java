@@ -65,7 +65,7 @@ public class User implements UserDetails {
     private boolean partnerShare;
 
     @Column(name = "biography", nullable = true)
-    private String biography;
+    private String description;
 
     @Column(name = "communism_relationship", nullable = true)
     private String communismRelationship;
@@ -78,7 +78,7 @@ public class User implements UserDetails {
 
     public User() {}
 
-    public User(String username, String password, String email, String gender, String sexualOrientation, String city, String nationality, int age, String countryOfResidence, String language, String second_language, String third_language, String fourth_language, String politicalBelief, Integer communismLevel, boolean partnerShare, String biography, String communismRelationship, String profilePicture, boolean isAdmin) {
+    public User(String username, String password, String email, String gender, String sexualOrientation, String city, String nationality, int age, String countryOfResidence, String language, String second_language, String third_language, String fourth_language, String politicalBelief, Integer communismLevel, boolean partnerShare, String description, String communismRelationship, String profilePicture, boolean isAdmin) {
         this.username = username;
         this.password = password;
         this.email = email;
@@ -95,7 +95,7 @@ public class User implements UserDetails {
         this.politicalBelief = politicalBelief;
         this.communismLevel = communismLevel;
         this.partnerShare = partnerShare;
-        this.biography = biography;
+        this.description = description;
         this.communismRelationship = communismRelationship;
         this.profilePicture = profilePicture;
         this.isAdmin = isAdmin;
@@ -138,18 +138,18 @@ public class User implements UserDetails {
                 && Objects.equals(this.age, user.age) && Objects.equals(this.countryOfResidence, user.countryOfResidence) && Objects.equals(this.language, user.language)   
                 && Objects.equals(this.secondLanguage, user.secondLanguage) && Objects.equals(this.thirdLanguage, user.thirdLanguage) && Objects.equals(this.fourthLanguage, user.fourthLanguage)   
                 && Objects.equals(this.politicalBelief, user.politicalBelief) && Objects.equals(this.communismLevel, user.communismLevel) && Objects.equals(this.partnerShare, user.partnerShare)   
-                && Objects.equals(this.biography, user.biography) && Objects.equals(this.communismRelationship, user.communismRelationship) && Objects.equals(this.profilePicture, user.profilePicture) 
+                && Objects.equals(this.description, user.description) && Objects.equals(this.communismRelationship, user.communismRelationship) && Objects.equals(this.profilePicture, user.profilePicture) 
                 && Objects.equals(this.isAdmin, user.isAdmin);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(this.id, this.username, this.password, this.email, this.gender, this.sexualOrientation, this.city, this.nationality, this.age, this.countryOfResidence, this.language, this.secondLanguage, this.thirdLanguage, this.fourthLanguage, this.politicalBelief, this.communismLevel, this.partnerShare, this.biography, this.communismRelationship, this.profilePicture, this.isAdmin);   
+        return Objects.hash(this.id, this.username, this.password, this.email, this.gender, this.sexualOrientation, this.city, this.nationality, this.age, this.countryOfResidence, this.language, this.secondLanguage, this.thirdLanguage, this.fourthLanguage, this.politicalBelief, this.communismLevel, this.partnerShare, this.description, this.communismRelationship, this.profilePicture, this.isAdmin);   
     }
     
     @Override
     public String toString() {
-        return "User{" + "id=" + this.id + ", username='" + this.username + '\'' + ", email='" + this.email + '\'' + ", gender='" + this.gender +'\'' + ", sexual orientation'" + this.sexualOrientation + + '\'' + ", password='" + this.password + '\'' + ", city='" + this.city + '\'' + ", nationaality='" + this.nationality + '\'' + ", age='" + this.age + '\'' + ", countryOfResidence='" + this.countryOfResidence + '\'' + ", language='" + this.language + '\'' + ", secondLanguage='" + this.secondLanguage + '\'' + ", thirdLanguage='" + this.thirdLanguage + '\'' + ", fourthLanguage='" + this.fourthLanguage + '\'' + ", politicalBelief='" + this.politicalBelief + '\'' + ", communismLevel='" + this.communismLevel + '\'' + ", partnerShare='" + this.partnerShare + '\'' + ", biography='" + this.biography + '\'' + ", communismRelationship='" + this.communismRelationship + '\'' + ", profilePicture='" + this.profilePicture + '\'' + ", isAdmin='" + this.isAdmin + '\'' + '}';
+        return "User{" + "id=" + this.id + ", username='" + this.username + '\'' + ", email='" + this.email + '\'' + ", gender='" + this.gender +'\'' + ", sexual orientation'" + this.sexualOrientation + + '\'' + ", password='" + this.password + '\'' + ", city='" + this.city + '\'' + ", nationaality='" + this.nationality + '\'' + ", age='" + this.age + '\'' + ", countryOfResidence='" + this.countryOfResidence + '\'' + ", language='" + this.language + '\'' + ", secondLanguage='" + this.secondLanguage + '\'' + ", thirdLanguage='" + this.thirdLanguage + '\'' + ", fourthLanguage='" + this.fourthLanguage + '\'' + ", politicalBelief='" + this.politicalBelief + '\'' + ", communismLevel='" + this.communismLevel + '\'' + ", partnerShare='" + this.partnerShare + '\'' + ", description='" + this.description + '\'' + ", communismRelationship='" + this.communismRelationship + '\'' + ", profilePicture='" + this.profilePicture + '\'' + ", isAdmin='" + this.isAdmin + '\'' + '}';
     }     
 
 public Long getId() {
@@ -288,12 +288,12 @@ public void setPartnerShare(boolean partnerShare) {
     this.partnerShare = partnerShare;
 }
 
-public String getBiography() {
-    return biography;
+public String getDescription() {
+    return description;
 }
 
-public void setBiography(String biography) {
-    this.biography = biography;
+public void setDescription(String description) {
+    this.description = description;
 }
 
 public String getCommunismRelationship() {
