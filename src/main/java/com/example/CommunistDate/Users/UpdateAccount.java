@@ -2,8 +2,6 @@ package com.example.CommunistDate.Users;
 
 import io.micrometer.common.lang.NonNull;
 import io.micrometer.common.lang.Nullable;
-import jakarta.validation.constraints.Pattern;
-import jakarta.validation.constraints.Size;
 
 public class UpdateAccount {
 
@@ -17,8 +15,6 @@ public class UpdateAccount {
     private String password;
 
     @Nullable
-    @Size(min = 5, max = 25)
-    @Pattern(regexp = "^(?=.*[A-Z])(?=.*\\d).+$", message = "Password must contain at least one uppercase letter and one number")
     private String newPassword;
 
     public UpdateAccount() {}

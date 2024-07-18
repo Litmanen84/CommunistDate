@@ -165,17 +165,28 @@ public class UserController {
                 try {
                     if (StringUtils.hasText(updateAccount.getNewUsername())) {
                       if (!repository.existsByUsername(updateAccount.getNewUsername())) {
+                        if (updateAccount.getNewUsername().length() < 5 || updateAccount.getNewUsername().length() > 20) {
+                          return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("New username must be between 5 and 20 characters");
+                        }
                         user.setUsername(updateAccount.getNewUsername());
-                        ResponseEntity.ok("Username updated successfully");
                       }
                     }
                     if (StringUtils.hasText(updateAccount.getEmail())) {
-                        user.setEmail(updateAccount.getEmail());
-                        ResponseEntity.ok("Email updated successfully");
-                    }
+                      String emailRegex = "^[\\w-\\.]+@([\\w-]+\\.)+[\\w-]{2,4}$";
+                      if (!updateAccount.getEmail().matches(emailRegex)) {
+                          return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Invalid email format");
+                      }
+                      user.setEmail(updateAccount.getEmail());
+                  }
                     if (StringUtils.hasText(updateAccount.getNewPassword())) {
+                      if (updateAccount.getNewPassword().length() < 5 || updateAccount.getNewPassword().length() > 25) {
+                        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("New password must be between 5 and 25 characters");
+                    }
+            
+                      if (!updateAccount.getNewPassword().matches("^(?=.*[A-Z])(?=.*\\d).+$")) {
+                        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Password must contain at least one uppercase letter and one number");
+                    }
                         user.setPassword(crypt.encode(updateAccount.getNewPassword()));
-                        ResponseEntity.ok("Password updated successfully");
                     }
 
                     repository.save(user);
