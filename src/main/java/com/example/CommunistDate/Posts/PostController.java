@@ -29,7 +29,7 @@ public class PostController {
         this.service = service;
     } 
 
-    @GetMapping
+    @GetMapping("/")
     public ResponseEntity<List<Post>> getAllPosts(Authentication auth) {
         if (auth != null && auth.isAuthenticated()) {
             List<Post> posts = service.getAllPosts();
