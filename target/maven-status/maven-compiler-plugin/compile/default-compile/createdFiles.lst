@@ -13,6 +13,7 @@ com/example/CommunistDate/config/WebSocketConfiguration.class
 com/example/CommunistDate/Users/UserController.class
 com/example/CommunistDate/config/ErrorResponse.class
 com/example/CommunistDate/Users/UserRepository.class
+com/example/CommunistDate/Users/UpdateAccount.class
 com/example/CommunistDate/CommunistDateApplication.class
 com/example/CommunistDate/Users/User.class
 com/example/CommunistDate/config/FieldErrorResponse.class

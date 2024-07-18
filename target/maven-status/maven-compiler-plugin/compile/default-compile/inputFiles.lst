@@ -15,6 +15,7 @@
 /home/litmanen/becode-code/CommunistDate/src/main/java/com/example/CommunistDate/Users/JwtService.java
 /home/litmanen/becode-code/CommunistDate/src/main/java/com/example/CommunistDate/Users/LoginRequest.java
 /home/litmanen/becode-code/CommunistDate/src/main/java/com/example/CommunistDate/Users/RegisterRequest.java
+/home/litmanen/becode-code/CommunistDate/src/main/java/com/example/CommunistDate/Users/UpdateAccount.java
 /home/litmanen/becode-code/CommunistDate/src/main/java/com/example/CommunistDate/Users/UpdateInfo.java
 /home/litmanen/becode-code/CommunistDate/src/main/java/com/example/CommunistDate/Users/User.java
 /home/litmanen/becode-code/CommunistDate/src/main/java/com/example/CommunistDate/Users/UserController.java

@@ -23,6 +23,7 @@ import com.cloudinary.utils.ObjectUtils;
 import java.io.IOException;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.util.StringUtils;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 @RestController
 @RequestMapping("/users")
@@ -32,14 +33,16 @@ public class UserController {
   private final LikeRepository likeRepository;
   private final UserService service;
   private final Cloudinary cloudinary;
+  private final PasswordEncoder crypt;
   private static final Logger logger = LoggerFactory.getLogger(UserController.class);
 
   @Autowired
-  UserController(UserRepository repository, LikeRepository likeRepository, UserService service, Cloudinary cloudinary) {
+  UserController(UserRepository repository, LikeRepository likeRepository, UserService service, Cloudinary cloudinary, PasswordEncoder crypt) {
     this.repository = repository;
     this.likeRepository = likeRepository;
     this.service = service;
     this.cloudinary = cloudinary;
+    this.crypt = crypt;
   } 
 
   @PreAuthorize("hasRole('ROLE_ADMIN')")
@@ -131,6 +134,56 @@ public class UserController {
             throw new ResponseStatusException(
                 HttpStatus.UNAUTHORIZED, e.getMessage(), e);
         }
+    }
+
+  @PutMapping("/{id}/updateAccount")
+    public ResponseEntity<?> updateAccount(@PathVariable long id, @Validated @RequestBody UpdateAccount updateAccount, Authentication auth, BindingResult result) {
+        if (result.hasErrors()) {
+            FieldError fieldError = result.getFieldError();
+            if (fieldError != null) {
+                logger.debug("Validation error on field, baccalà " + fieldError.getField() + ": " + fieldError.getDefaultMessage() + " " + fieldError.getCode());
+            }
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(result.getAllErrors());
+        }
+        if (auth == null || !(auth.getPrincipal() instanceof Jwt)) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("You must be logged in to update your profile, baccalà -1");
+        }
+        if (!auth.isAuthenticated()) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("You must be logged in to update your profile, baccalà -2");
+        }
+
+        User user = repository.findById(id)
+            .orElseThrow(() -> new RuntimeException("User not found, baccalà"));
+
+        if (!auth.getName().equals(user.getUsername())) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("You are not authorized to update this profile, baccalà");
+        }
+
+        if (!crypt.matches(updateAccount.getPassword(), user.getPassword())) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Insert a valid password, baccalà");
+        } else {
+                try {
+                    if (StringUtils.hasText(updateAccount.getNewUsername())) {
+                      if (!repository.existsByUsername(updateAccount.getNewUsername())) {
+                        user.setUsername(updateAccount.getNewUsername());
+                        ResponseEntity.ok("Username updated successfully");
+                      }
+                    }
+                    if (StringUtils.hasText(updateAccount.getEmail())) {
+                        user.setEmail(updateAccount.getEmail());
+                        ResponseEntity.ok("Email updated successfully");
+                    }
+                    if (StringUtils.hasText(updateAccount.getNewPassword())) {
+                        user.setPassword(crypt.encode(updateAccount.getNewPassword()));
+                        ResponseEntity.ok("Password updated successfully");
+                    }
+
+                    repository.save(user);
+                    return ResponseEntity.ok("User updated successfully");
+                } catch (Exception e) {
+                    throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage(), e);
+                }
+              }
     }
 
   @PutMapping("/{id}")
