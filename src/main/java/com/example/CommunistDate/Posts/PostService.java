@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import com.example.CommunistDate.Users.User;
 import com.example.CommunistDate.Users.UserRepository;
+import java.util.List;
 
 @Service
 public class PostService {
@@ -18,9 +19,9 @@ public class PostService {
         this.userRepository = userRepository;
     }    
 
-    // public List<Post> getAllPosts() {
-    //     return repository.findAll();
-    // }
+    public List<Post> getAllPosts() {
+        return repository.findAll();
+    }
 
     // public Optional<Post> getPostById(Long id) {
     //     return repository.findById(id);

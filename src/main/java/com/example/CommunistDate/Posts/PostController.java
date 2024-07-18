@@ -13,7 +13,7 @@ import org.slf4j.LoggerFactory;
 import com.example.CommunistDate.Users.UserService;
 import jakarta.validation.Valid;
 import com.example.CommunistDate.Users.User;
-
+import java.util.List;
 
 @RestController
 @RequestMapping("/posts")
@@ -26,15 +26,13 @@ public class PostController {
     @Autowired
     PostController(PostService service, UserService userService) {
         this.userService = userService;
-    this.service = service;
-  } 
+        this.service = service;
+    } 
 
-    
-    // @PreAuthorize("hasRole('ROLE_ADMIN')")
-    // @GetMapping
-    // public List<Post> getAllPosts() {
-    //     return service.getAllPosts();
-    // }
+    @GetMapping
+    public List<Post> getAllPosts() {
+        return service.getAllPosts();
+    }
 
     // @GetMapping("/{id}")
     // public Post getPostById(@PathVariable Long id) {
