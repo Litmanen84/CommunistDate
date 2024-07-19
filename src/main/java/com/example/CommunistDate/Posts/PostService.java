@@ -19,8 +19,8 @@ public class PostService {
         this.userRepository = userRepository;
     }    
 
-    public List<Post> getAllPosts() {
-        return repository.findAll();
+    public List<Post> getAllPosts(User user) {
+        return repository.findByUser(user);
     }
 
     // public Optional<Post> getPostById(Long id) {

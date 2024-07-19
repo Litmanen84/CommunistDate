@@ -31,8 +31,19 @@ public class PostController {
 
     @GetMapping("/")
     public ResponseEntity<List<Post>> getAllPosts(Authentication auth) {
-        if (auth != null && auth.isAuthenticated()) {
-            List<Post> posts = service.getAllPosts();
+        if (auth == null || !(auth.getPrincipal() instanceof Jwt)) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+        
+        if (!auth.isAuthenticated()) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+        Jwt jwt = (Jwt) auth.getPrincipal();
+        String username = jwt.getSubject();
+        User user = userService.findByUsername(username);
+        
+        if (user != null) {
+            List<Post> posts = service.getAllPosts(user);
             return ResponseEntity.ok(posts);
         } else {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
