@@ -147,13 +147,38 @@ public class PostController {
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
     }
 
-//     @DeleteMapping("/{id}")
-//     public void deletePost(@PathVariable Long id, @RequestBody DeletePostRequest request) {
-//         User user = userService.findByUsername(request.getUsername());
-//         if (user != null && user.getIs_admin()) {
-//             service.deletePost(id);
-//         } else {
-//             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Only admins can delete posts");
-//         }
-//     }
+    @DeleteMapping("/{id}")
+    public ResponseEntity<?> deletePost(@PathVariable Long id, Authentication auth) {
+        if (auth == null || !(auth.getPrincipal() instanceof Jwt)) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+        
+        if (!auth.isAuthenticated()) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+        
+        Jwt jwt = (Jwt) auth.getPrincipal();
+        String username = jwt.getSubject();
+        User user = userService.findByUsername(username);
+        
+        if (user != null) {
+            Post post = service.findPostById(id);
+            
+            if (post == null) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+            }
+    
+            if (post.getUserId().equals(user) || user.getIsAdmin()) {
+                try {
+                    service.deletePost(id);
+                    return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+                } catch (Exception e) {
+                    return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+                }
+            } else {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+            }
+        }
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+    }
 }

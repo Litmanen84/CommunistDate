@@ -54,13 +54,10 @@ public class PostService {
         return repository.save(post);
     }
 
-    // public void deletePost(Long id) {
-    //     if (repository.existsById(id)) {
-    //         repository.deleteById(id);
-    //     } else {
-    //         throw new PostNotFoundException(id);
-    //     }
-    // }
+    public void deletePost(Long id) {
+        Post post = repository.findById(id).orElseThrow(() -> new IllegalArgumentException("Post not found for Id: " + id));
+        repository.deleteById(id);
+    }
 
     public Post findPostById(Long id) {
         return repository.findById(id).orElse(null);
