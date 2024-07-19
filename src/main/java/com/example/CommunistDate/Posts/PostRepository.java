@@ -6,4 +6,5 @@ import com.example.CommunistDate.Users.User;
 
 public interface PostRepository extends JpaRepository<Post, Long> {
     List<Post> findByUser(User user);
+    Post findPostById(Long id);
 }

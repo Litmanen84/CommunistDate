@@ -44,15 +44,15 @@ public class PostService {
         return repository.save(post);
     }
 
-    // public Post updatePost(Long id, String title, String content) {
-    //     return repository.findById(id)
-    //             .map(post -> {
-    //                 post.setTitle(title);
-    //                 post.setContent(content);
-    //                 return repository.save(post);
-    //             })
-    //             .orElseThrow(() -> new PostNotFoundException(id));
-    // }
+    public Post updatePost(Long id, UpdatePostRequest update) {
+        Post post = repository.findById(id).get();
+        if (post == null) {
+            throw new IllegalArgumentException("Fess, Post not found for Id: " + id);
+        }
+        post.setTitle(update.getTitle());
+        post.setContent(update.getContent());
+        return repository.save(post);
+    }
 
     // public void deletePost(Long id) {
     //     if (repository.existsById(id)) {
@@ -61,4 +61,8 @@ public class PostService {
     //         throw new PostNotFoundException(id);
     //     }
     // }
+
+    public Post findPostById(Long id) {
+        return repository.findById(id).orElse(null);
+    }
 }
