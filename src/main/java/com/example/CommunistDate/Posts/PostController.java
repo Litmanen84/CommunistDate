@@ -8,6 +8,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
+import org.apache.tomcat.util.http.parser.Authorization;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import com.example.CommunistDate.Users.UserService;
@@ -50,11 +51,26 @@ public class PostController {
         }
     }
 
-    // @GetMapping("/{id}")
-    // public Post getPostById(@PathVariable Long id) {
-    //     return service.getPostById(id)
-    //             .orElseThrow(() -> new PostNotFoundException(id));
-    // }
+    @GetMapping("/{id}")
+    public ResponseEntity<List<Post>> getPostById(@PathVariable Long id, Authentication auth) {
+        if (auth == null || !(auth.getPrincipal() instanceof Jwt)) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+        
+        if (!auth.isAuthenticated()) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+        Jwt jwt = (Jwt) auth.getPrincipal();
+        String username = jwt.getSubject();
+        User user = userService.findByUsername(username);
+        
+        if (user != null) {
+            List<Post> posts = service.getPostById(id);
+            return ResponseEntity.ok(posts);
+        } else {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+    }
 
     @PostMapping("/")
     public ResponseEntity<?> createPost(@Valid @RequestBody CreatePostRequest request, Authentication auth, BindingResult result) {

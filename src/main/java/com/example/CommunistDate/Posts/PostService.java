@@ -23,9 +23,10 @@ public class PostService {
         return repository.findByUser(user);
     }
 
-    // public Optional<Post> getPostById(Long id) {
-    //     return repository.findById(id);
-    // }
+    public List<Post> getPostById(Long id) {
+        User user = userRepository.findById(id).get();
+        return repository.findByUser(user);
+    }
 
     public Post createPost(CreatePostRequest request, Long id) {
         Optional<User> optionalUser = userRepository.findById(id);

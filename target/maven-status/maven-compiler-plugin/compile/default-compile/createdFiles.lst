@@ -1,4 +1,3 @@
-com/example/CommunistDate/Posts/PostRepository.class
 com/example/CommunistDate/Chat/ChatGroup.class
 com/example/CommunistDate/Users/RegisterRequest.class
 com/example/CommunistDate/Users/UserService.class
@@ -20,7 +19,6 @@ com/example/CommunistDate/CommunistDateApplication.class
 com/example/CommunistDate/Users/User.class
 com/example/CommunistDate/config/FieldErrorResponse.class
 com/example/CommunistDate/Likes/LikeRequest.class
-com/example/CommunistDate/Posts/PostService.class
 com/example/CommunistDate/config/GlobalExceptionHandler.class
 com/example/CommunistDate/Users/UpdateInfo.class
 com/example/CommunistDate/Chat/ChatRepository.class
@@ -33,6 +31,5 @@ com/example/CommunistDate/Users/CustomUserDetails.class
 com/example/CommunistDate/Chat/NewMessage.class
 com/example/CommunistDate/config/CorsConfig.class
 com/example/CommunistDate/Users/LoginRequest.class
-com/example/CommunistDate/Posts/PostController.class
 com/example/CommunistDate/Likes/LikeService.class
 com/example/CommunistDate/Likes/Like.class
