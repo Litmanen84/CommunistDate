@@ -54,10 +54,10 @@ public class UserController {
   @GetMapping("/random")
   public ResponseEntity<Object> getRandomUser(Authentication auth) {
     if (auth == null || !(auth.getPrincipal() instanceof Jwt)) {
-        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("You must be logged in to update your profile, baccalà -1");
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("You must be logged in to look for a match, baccalà -1");
       }
     if (!auth.isAuthenticated()) {
-        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("You must be logged in to update your profile, baccalà -2");
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("You must be logged in to look for a match, baccalà -2");
       }
     Optional<User> askingUserOptional = repository.findByUsername(auth.getName());
     if (!askingUserOptional.isPresent()) {
