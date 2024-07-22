@@ -18,6 +18,8 @@
 /home/litmanen/becode-code/CommunistDate/src/main/java/com/example/CommunistDate/Posts/PostRepository.java
 /home/litmanen/becode-code/CommunistDate/src/main/java/com/example/CommunistDate/Posts/PostService.java
 /home/litmanen/becode-code/CommunistDate/src/main/java/com/example/CommunistDate/Posts/UpdatePostRequest.java
+/home/litmanen/becode-code/CommunistDate/src/main/java/com/example/CommunistDate/UserPreferences/UserPreferences.java
+/home/litmanen/becode-code/CommunistDate/src/main/java/com/example/CommunistDate/UserPreferences/UserPreferencesRepository.java
 /home/litmanen/becode-code/CommunistDate/src/main/java/com/example/CommunistDate/Users/CustomUserDetails.java
 /home/litmanen/becode-code/CommunistDate/src/main/java/com/example/CommunistDate/Users/CustomUserDetailsService.java
 /home/litmanen/becode-code/CommunistDate/src/main/java/com/example/CommunistDate/Users/JwtService.java

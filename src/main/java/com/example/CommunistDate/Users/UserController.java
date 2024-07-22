@@ -5,9 +5,12 @@ import java.util.stream.Collectors;
 import org.springframework.web.server.ResponseStatusException;
 import com.example.CommunistDate.Likes.Like;
 import com.example.CommunistDate.Likes.LikeRepository;
+import com.example.CommunistDate.UserPreferences.UserPreferences;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -24,6 +27,10 @@ import java.io.IOException;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.util.StringUtils;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import com.example.CommunistDate.UserPreferences.UserPreferencesRepository;
 
 @RestController
 @RequestMapping("/users")
@@ -31,18 +38,20 @@ public class UserController {
 
   private final UserRepository repository;
   private final LikeRepository likeRepository;
+  private final UserPreferencesRepository preferencesRepository;
   private final UserService service;
   private final Cloudinary cloudinary;
   private final PasswordEncoder crypt;
   private static final Logger logger = LoggerFactory.getLogger(UserController.class);
 
   @Autowired
-  UserController(UserRepository repository, LikeRepository likeRepository, UserService service, Cloudinary cloudinary, PasswordEncoder crypt) {
+  UserController(UserRepository repository, LikeRepository likeRepository, UserService service, Cloudinary cloudinary, PasswordEncoder crypt, UserPreferencesRepository preferencesRepository) {
     this.repository = repository;
     this.likeRepository = likeRepository;
     this.service = service;
     this.cloudinary = cloudinary;
     this.crypt = crypt;
+    this.preferencesRepository = preferencesRepository;
   } 
 
   @PreAuthorize("hasRole('ROLE_ADMIN')")
@@ -54,16 +63,19 @@ public class UserController {
   @GetMapping("/random")
   public ResponseEntity<Object> getRandomUser(Authentication auth) {
     if (auth == null || !(auth.getPrincipal() instanceof Jwt)) {
-        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("You must be logged in to look for a match, baccalà -1");
-      }
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("You must be logged in to update your profile, baccalà -1");
+    }
     if (!auth.isAuthenticated()) {
-        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("You must be logged in to look for a match, baccalà -2");
-      }
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("You must be logged in to update your profile, baccalà -2");
+    }
     Optional<User> askingUserOptional = repository.findByUsername(auth.getName());
     if (!askingUserOptional.isPresent()) {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found");
     }
     User askingUser = askingUserOptional.get();
+
+    Optional<UserPreferences> preferencesOptional = preferencesRepository.findByUser(askingUser);
+    UserPreferences preferences = preferencesOptional.orElse(new UserPreferences());
 
     List<Like> userLikes = likeRepository.findAllByUserId1(askingUser);
     Set<Long> excludedUserIds = userLikes.stream()
@@ -73,14 +85,59 @@ public class UserController {
 
     logger.info("Excluded User IDs: " + excludedUserIds);
 
-    User user = repository.findRandomUserExcluding(new ArrayList<>(excludedUserIds));
-    if (user == null) {
+    Pageable pageable = PageRequest.of(0, 1, Sort.by(Sort.Order.asc("RAND()")));
+    Page<User> userPage = repository.findRandomUserExcluding(
+        new ArrayList<>(excludedUserIds),
+        preferences.getMinAge(),
+        preferences.getMaxAge(),
+        preferences.getPoliticalBelief(),
+        preferences.getGender(),
+        preferences.getPartnerShare(),
+        pageable
+    );
+
+    if (userPage.isEmpty()) {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body("No users found");
     }
+    User user = userPage.getContent().get(0);
     logger.info("Selected User ID: " + user.getId());
 
     return ResponseEntity.ok(user);
 }
+
+  @PutMapping("/preferences")
+  public ResponseEntity<Object> updateUserPreferences(Authentication auth, @RequestBody UserPreferences newPreferences) {
+    if ((auth == null) || !(auth.getPrincipal() instanceof Jwt)) {
+        logger.error("Ehi! Authentication object is null");
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("You must be logged in to send a message -1");
+    }
+    if (!auth.isAuthenticated()) {
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("You must be logged in to send a message -2");
+    }
+      Optional<User> userOptional = repository.findByUsername(auth.getName());
+      if (!userOptional.isPresent()) {
+          return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found");
+      }
+      User user = userOptional.get();
+
+      // Check if preferences exist
+      UserPreferences existingPreferences = preferencesRepository.findByUser(user).orElse(null);
+      if (existingPreferences != null) {
+          // Update existing preferences
+          existingPreferences.setMinAge(newPreferences.getMinAge());
+          existingPreferences.setMaxAge(newPreferences.getMaxAge());
+          existingPreferences.setPoliticalBelief(newPreferences.getPoliticalBelief());
+          existingPreferences.setGender(newPreferences.getGender());
+          existingPreferences.setPartnerShare(newPreferences.getPartnerShare());
+          preferencesRepository.save(existingPreferences);
+      } else {
+          // Create new preferences if not exist
+          newPreferences.setUser(user);
+          preferencesRepository.save(newPreferences);
+      }
+
+      return ResponseEntity.ok("Preferences updated");
+  }
 
   @GetMapping("/profile")
   public ResponseEntity<Object> personalProfile(Authentication auth) {

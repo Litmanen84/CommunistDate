@@ -1,4 +1,4 @@
 -------------------------------------------------------------------------------
 Test set: com.example.CommunistDate.CommunistDateApplicationTests
 -------------------------------------------------------------------------------
-Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 19.07 s -- in com.example.CommunistDate.CommunistDateApplicationTests
+Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 10.92 s -- in com.example.CommunistDate.CommunistDateApplicationTests
