@@ -20,8 +20,9 @@ public interface UserRepository extends JpaRepository<User, Long> {
        "(:maxAge IS NULL OR u.age <= :maxAge) AND " +
        "(:politicalBelief IS NULL OR u.politicalBelief = :politicalBelief) AND " +
        "(:gender IS NULL OR u.gender = :gender) AND " +
-       "(:partnerShare IS NULL OR u.partnerShare = :partnerShare)")
-    Page<User> findRandomUserExcluding(@Param("excludedUserIds") List<Long> excludedUserIds,
+       "(:partnerShare IS NULL OR u.partnerShare = :partnerShare)"+
+       "ORDER BY RANDOM() LIMIT 1")
+    List<User> findRandomUserExcluding(@Param("excludedUserIds") List<Long> excludedUserIds,
                                    @Param("minAge") Integer minAge,
                                    @Param("maxAge") Integer maxAge,
                                    @Param("politicalBelief") String politicalBelief,

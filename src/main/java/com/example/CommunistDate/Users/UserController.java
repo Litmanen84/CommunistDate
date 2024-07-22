@@ -27,9 +27,7 @@ import java.io.IOException;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.util.StringUtils;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import com.example.CommunistDate.UserPreferences.UserPreferencesRepository;
 
 @RestController
@@ -62,48 +60,48 @@ public class UserController {
 
   @GetMapping("/random")
   public ResponseEntity<Object> getRandomUser(Authentication auth) {
-    if (auth == null || !(auth.getPrincipal() instanceof Jwt)) {
-        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("You must be logged in to update your profile, baccalà -1");
-    }
-    if (!auth.isAuthenticated()) {
-        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("You must be logged in to update your profile, baccalà -2");
-    }
-    Optional<User> askingUserOptional = repository.findByUsername(auth.getName());
-    if (!askingUserOptional.isPresent()) {
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found");
-    }
-    User askingUser = askingUserOptional.get();
+      if (auth == null || !(auth.getPrincipal() instanceof Jwt)) {
+          return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("You must be logged in to update your profile, baccalà -1");
+      }
+      if (!auth.isAuthenticated()) {
+          return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("You must be logged in to update your profile, baccalà -2");
+      }
+      Optional<User> askingUserOptional = repository.findByUsername(auth.getName());
+      if (!askingUserOptional.isPresent()) {
+          return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found");
+      }
+      User askingUser = askingUserOptional.get();
 
-    Optional<UserPreferences> preferencesOptional = preferencesRepository.findByUser(askingUser);
-    UserPreferences preferences = preferencesOptional.orElse(new UserPreferences());
+      Optional<UserPreferences> preferencesOptional = preferencesRepository.findByUser(askingUser);
+      UserPreferences preferences = preferencesOptional.orElse(new UserPreferences());
 
-    List<Like> userLikes = likeRepository.findAllByUserId1(askingUser);
-    Set<Long> excludedUserIds = userLikes.stream()
-        .map(like -> like.getUserId2().getId())
-        .collect(Collectors.toSet());
-    excludedUserIds.add(askingUser.getId());
+      List<Like> userLikes = likeRepository.findAllByUserId1(askingUser);
+      Set<Long> excludedUserIds = userLikes.stream()
+          .map(like -> like.getUserId2().getId())
+          .collect(Collectors.toSet());
+      excludedUserIds.add(askingUser.getId());
 
-    logger.info("Excluded User IDs: " + excludedUserIds);
+      logger.info("Excluded User IDs: " + excludedUserIds);
 
-    Pageable pageable = PageRequest.of(0, 1, Sort.by(Sort.Order.asc("RAND()")));
-    Page<User> userPage = repository.findRandomUserExcluding(
-        new ArrayList<>(excludedUserIds),
-        preferences.getMinAge(),
-        preferences.getMaxAge(),
-        preferences.getPoliticalBelief(),
-        preferences.getGender(),
-        preferences.getPartnerShare(),
-        pageable
-    );
+      Pageable pageable = PageRequest.of(0, 1);
+      List<User> users = repository.findRandomUserExcluding(
+          new ArrayList<>(excludedUserIds),
+          preferences.getMinAge(),
+          preferences.getMaxAge(),
+          preferences.getPoliticalBelief(),
+          preferences.getGender(),
+          preferences.getPartnerShare(),
+          pageable
+      );
 
-    if (userPage.isEmpty()) {
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body("No users found");
-    }
-    User user = userPage.getContent().get(0);
-    logger.info("Selected User ID: " + user.getId());
+      if (users.isEmpty()) {
+          return ResponseEntity.status(HttpStatus.NOT_FOUND).body("No users found");
+      }
+      User user = users.get(0);
+      logger.info("Selected User ID: " + user.getId());
 
-    return ResponseEntity.ok(user);
-}
+      return ResponseEntity.ok(user);
+  }
 
   @PutMapping("/preferences")
   public ResponseEntity<Object> updateUserPreferences(Authentication auth, @RequestBody UserPreferences newPreferences) {
