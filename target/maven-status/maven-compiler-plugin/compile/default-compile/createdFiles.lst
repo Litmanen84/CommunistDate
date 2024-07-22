@@ -8,7 +8,6 @@ com/example/CommunistDate/WebSocket/WebSocketController.class
 com/example/CommunistDate/Chat/ChatController.class
 com/example/CommunistDate/Users/CustomUserDetailsService.class
 com/example/CommunistDate/UserPreferences/UserPreferencesRepository.class
-application.properties
 com/example/CommunistDate/config/WebSecurityConfig.class
 com/example/CommunistDate/Likes/LikeController.class
 com/example/CommunistDate/Likes/LikeRepository.class
@@ -31,6 +30,7 @@ com/example/CommunistDate/Chat/ChatRepository.class
 com/example/CommunistDate/config/ValidationException.class
 com/example/CommunistDate/Chat/Chat.class
 com/example/CommunistDate/Users/JwtService.class
+com/example/CommunistDate/UserPreferences/UserPreferencesController.class
 com/example/CommunistDate/config/CloudinaryConfig.class
 com/example/CommunistDate/Posts/CreatePostRequest.class
 com/example/CommunistDate/Users/CustomUserDetails.class
