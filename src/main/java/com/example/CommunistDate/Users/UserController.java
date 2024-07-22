@@ -53,6 +53,12 @@ public class UserController {
 
   @GetMapping("/random")
   public ResponseEntity<Object> getRandomUser(Authentication auth) {
+    if (auth == null || !(auth.getPrincipal() instanceof Jwt)) {
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("You must be logged in to update your profile, baccalà -1");
+      }
+    if (!auth.isAuthenticated()) {
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("You must be logged in to update your profile, baccalà -2");
+      }
     Optional<User> askingUserOptional = repository.findByUsername(auth.getName());
     if (!askingUserOptional.isPresent()) {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found");
@@ -60,14 +66,14 @@ public class UserController {
     User askingUser = askingUserOptional.get();
 
     List<Like> userLikes = likeRepository.findAllByUserId1(askingUser);
-    List<Long> excludedUserIds = userLikes.stream()
+    Set<Long> excludedUserIds = userLikes.stream()
         .map(like -> like.getUserId2().getId())
-        .collect(Collectors.toList());
+        .collect(Collectors.toSet());
     excludedUserIds.add(askingUser.getId());
 
     logger.info("Excluded User IDs: " + excludedUserIds);
 
-    User user = repository.findRandomUserExcluding(excludedUserIds);
+    User user = repository.findRandomUserExcluding(new ArrayList<>(excludedUserIds));
     if (user == null) {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body("No users found");
     }

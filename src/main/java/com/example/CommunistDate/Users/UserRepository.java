@@ -13,7 +13,7 @@ public interface UserRepository extends JpaRepository<User, Long> {
     @Query(value = "SELECT * from users ORDER BY RANDOM() LIMIT 1", nativeQuery = true)
     User findRandomUser();
 
-    @Query("SELECT u FROM User u WHERE u.id NOT IN :excludedUserIds ORDER BY RANDOM() LIMIT 1")
+    @Query("SELECT u FROM User u WHERE u.id NOT IN :excludedUserIds ORDER BY RANDOM()")
     User findRandomUserExcluding(@Param("excludedUserIds") List<Long> excludedUserIds);
 
     boolean existsByUsername(String username);
