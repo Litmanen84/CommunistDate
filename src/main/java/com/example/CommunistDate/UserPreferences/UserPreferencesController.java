@@ -58,7 +58,7 @@ public class UserPreferencesController {
         // Check if preferences exist
         UserPreferences existingPreferences = preferencesRepository.findByUser(user).orElse(null);
         if (existingPreferences != null) {
-            // Update existing preferences
+        
             existingPreferences.setMinAge(newPreferences.getMinAge());
             existingPreferences.setMaxAge(newPreferences.getMaxAge());
             existingPreferences.setPoliticalBelief(newPreferences.getPoliticalBelief());
@@ -66,7 +66,6 @@ public class UserPreferencesController {
             existingPreferences.setPartnerShare(newPreferences.getPartnerShare());
             preferencesRepository.save(existingPreferences);
         } else {
-            // Create new preferences if not exist
             newPreferences.setUser(user);
             preferencesRepository.save(newPreferences);
         }
@@ -98,47 +97,55 @@ public class UserPreferencesController {
     }
 
     @GetMapping("/random")
-  public ResponseEntity<Object> getRandomUser(Authentication auth) {
-      if (auth == null || !(auth.getPrincipal() instanceof Jwt)) {
-          return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("You must be logged in to update your profile, baccalà -1");
-      }
-      if (!auth.isAuthenticated()) {
-          return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("You must be logged in to update your profile, baccalà -2");
-      }
-      Optional<User> askingUserOptional = repository.findByUsername(auth.getName());
-      if (!askingUserOptional.isPresent()) {
-          return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found");
-      }
-      User askingUser = askingUserOptional.get();
+    public ResponseEntity<Object> getRandomUser(Authentication auth) {
+        if (auth == null || !(auth.getPrincipal() instanceof Jwt)) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("You must be logged in to update your profile, baccalà -1");
+        }
+        if (!auth.isAuthenticated()) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("You must be logged in to update your profile, baccalà -2");
+        }
+        Optional<User> askingUserOptional = repository.findByUsername(auth.getName());
+        if (!askingUserOptional.isPresent()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found");
+        }
+        User askingUser = askingUserOptional.get();
 
-      Optional<UserPreferences> preferencesOptional = preferencesRepository.findByUser(askingUser);
-      UserPreferences preferences = preferencesOptional.orElse(new UserPreferences());
+        Optional<UserPreferences> preferencesOptional = preferencesRepository.findByUser(askingUser);
+        UserPreferences preferences = preferencesOptional.orElse(new UserPreferences());
 
-      List<Like> userLikes = likeRepository.findAllByUserId1(askingUser);
-      Set<Long> excludedUserIds = userLikes.stream()
-          .map(like -> like.getUserId2().getId())
-          .collect(Collectors.toSet());
-      excludedUserIds.add(askingUser.getId());
+        List<Like> userLikes = likeRepository.findAllByUserId1(askingUser);
+        Set<Long> excludedUserIds = userLikes.stream()
+            .map(like -> like.getUserId2().getId())
+            .collect(Collectors.toSet());
+        excludedUserIds.add(askingUser.getId());
 
-      logger.info("Excluded User IDs: " + excludedUserIds);
+        logger.info("Excluded User IDs: " + excludedUserIds);
 
-      Pageable pageable = PageRequest.of(0, 1);
-      List<User> users = repository.findRandomUserExcluding(
-          new ArrayList<>(excludedUserIds),
-          preferences.getMinAge(),
-          preferences.getMaxAge(),
-          preferences.getPoliticalBelief(),
-          preferences.getGender(),
-          preferences.getPartnerShare(),
-          pageable
-      );
+        Pageable pageable = PageRequest.of(0, 1);
 
-      if (users.isEmpty()) {
-          return ResponseEntity.status(HttpStatus.NOT_FOUND).body("No users found");
-      }
-      User user = users.get(0);
-      logger.info("Selected User ID: " + user.getId());
+        // Prepariamo la lista di criteri di ricerca
+        Integer minAge = (preferences.getMinAge() != null && preferences.getMinAge() > 0) ? preferences.getMinAge() : null;
+        Integer maxAge = (preferences.getMaxAge() != null && preferences.getMaxAge() > 0) ? preferences.getMaxAge() : null;
+        String politicalBelief = (preferences.getPoliticalBelief() != null && !preferences.getPoliticalBelief().trim().isEmpty()) ? preferences.getPoliticalBelief().trim() : null;
+        String gender = (preferences.getGender() != null && !preferences.getGender().trim().isEmpty()) ? preferences.getGender().trim() : null;
+        Boolean partnerShare = preferences.getPartnerShare(); // partnerShare è booleano, quindi non serve il controllo
 
-      return ResponseEntity.ok(user);
-  }
+        List<User> users = repository.findRandomUserExcluding(
+            new ArrayList<>(excludedUserIds),
+            minAge,
+            maxAge,
+            politicalBelief,
+            gender,
+            partnerShare,
+            pageable
+        );
+
+        if (users.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("No users found");
+        }
+        User user = users.get(0);
+        logger.info("Selected User ID: " + user.getId());
+
+        return ResponseEntity.ok(user);
+    }
 }
